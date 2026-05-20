@@ -4,6 +4,7 @@ import org.Profile.query.model.response.ProfileResponse;
 import org.Profile.query.model.response.EducationResponse;
 import org.Profile.query.queries.GetMyProfileQuery;
 import org.Profile.query.queries.GetProfileByIdQuery;
+import org.Profile.query.queries.GetProfileEducationDetailQuery;
 import org.Profile.query.queries.GetProfileEducationsQuery;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -45,6 +46,17 @@ public class ProfileQueryController {
         return queryGateway.query(
                 new GetProfileEducationsQuery(profileId),
                 ResponseTypes.multipleInstancesOf(EducationResponse.class)
+        );
+    }
+
+    @GetMapping("/{profileId}/educations/{educationId}")
+    public CompletableFuture<EducationResponse> getProfileEducationDetail(
+            @PathVariable String profileId,
+            @PathVariable String educationId
+    ) {
+        return queryGateway.query(
+                new GetProfileEducationDetailQuery(profileId, educationId),
+                ResponseTypes.instanceOf(EducationResponse.class)
         );
     }
 }

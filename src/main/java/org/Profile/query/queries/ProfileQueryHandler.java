@@ -50,6 +50,20 @@ public class ProfileQueryHandler {
         return mapEducations(profile);
     }
 
+    @QueryHandler
+    @Transactional(readOnly = true)
+    public EducationResponse handle(GetProfileEducationDetailQuery query) {
+        Profile profile = profileRepository.findById(query.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        Education education = profile.getEducations().stream()
+                .filter(existingEducation -> existingEducation.getId().equals(query.getEducationId()))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Học vấn không tồn tại"));
+
+        return mapEducation(education);
+    }
+
     private ProfileResponse mapToResponse(Profile profile) {
         return ProfileResponse.builder()
                 .id(profile.getId())
@@ -83,17 +97,21 @@ public class ProfileQueryHandler {
     private List<EducationResponse> mapEducations(Profile profile) {
         return profile.getEducations().stream()
                 .sorted(Comparator.comparing(Education::getStartDate, Comparator.nullsLast(Comparator.reverseOrder())))
-                .map(education -> EducationResponse.builder()
-                        .id(education.getId())
-                        .schoolName(education.getSchoolName())
-                        .degree(education.getDegree())
-                        .fieldOfStudy(education.getFieldOfStudy())
-                        .startDate(education.getStartDate())
-                        .endDate(education.getEndDate())
-                        .currentlyStudying(education.getCurrentlyStudying())
-                        .description(education.getDescription())
-                        .build())
+                .map(this::mapEducation)
                 .toList();
+    }
+
+    private EducationResponse mapEducation(Education education) {
+        return EducationResponse.builder()
+                .id(education.getId())
+                .schoolName(education.getSchoolName())
+                .degree(education.getDegree())
+                .fieldOfStudy(education.getFieldOfStudy())
+                .startDate(education.getStartDate())
+                .endDate(education.getEndDate())
+                .currentlyStudying(education.getCurrentlyStudying())
+                .description(education.getDescription())
+                .build();
     }
 
     private List<WorkExperienceResponse> mapExperiences(Profile profile) {
