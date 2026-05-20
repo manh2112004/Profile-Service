@@ -1,28 +1,24 @@
-package org.Profile.command.command;
+package org.Profile.query.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.Profile.command.model.request.CreateEducationRequest;
-import org.Profile.command.model.request.CreateProfileSkillRequest;
-import org.Profile.command.model.request.CreateSocialLinkRequest;
-import org.Profile.command.model.request.CreateWorkExperienceRequest;
 import org.Profile.constant.Gender;
 import org.Profile.constant.ProfileStatus;
-import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateProfileCommand {
-    @TargetAggregateIdentifier
+@Builder
+public class ProfileResponse {
     private String id;
     private String userId;
     private String fullName;
@@ -42,8 +38,14 @@ public class CreateProfileCommand {
     private String expectedLocation;
     private Double expectedSalary;
     private ProfileStatus status;
-    private List<CreateEducationRequest> educations;
-    private List<CreateWorkExperienceRequest> experiences;
-    private List<CreateProfileSkillRequest> skills;
-    private List<CreateSocialLinkRequest> socialLinks;
+    @Builder.Default
+    private List<EducationResponse> educations = new ArrayList<>();
+    @Builder.Default
+    private List<WorkExperienceResponse> experiences = new ArrayList<>();
+    @Builder.Default
+    private List<ProfileSkillResponse> skills = new ArrayList<>();
+    @Builder.Default
+    private List<SocialLinkResponse> socialLinks = new ArrayList<>();
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
