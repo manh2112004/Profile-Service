@@ -255,4 +255,40 @@ public class ProfileEventHandler {
         profile.getEducations().add(education);
         profileRepository.save(profile);
     }
+
+    @EventHandler
+    @Transactional
+    public void on(ProfileEducationUpdatedEvent event) {
+        Profile profile = profileRepository.findById(event.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        Education education = profile.getEducations().stream()
+                .filter(existingEducation -> existingEducation.getId().equals(event.getEducationId()))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Học vấn không tồn tại"));
+
+        if (event.getSchoolName() != null) {
+            education.setSchoolName(event.getSchoolName());
+        }
+        if (event.getDegree() != null) {
+            education.setDegree(event.getDegree());
+        }
+        if (event.getFieldOfStudy() != null) {
+            education.setFieldOfStudy(event.getFieldOfStudy());
+        }
+        if (event.getStartDate() != null) {
+            education.setStartDate(event.getStartDate());
+        }
+        if (event.getEndDate() != null) {
+            education.setEndDate(event.getEndDate());
+        }
+        if (event.getCurrentlyStudying() != null) {
+            education.setCurrentlyStudying(event.getCurrentlyStudying());
+        }
+        if (event.getDescription() != null) {
+            education.setDescription(event.getDescription());
+        }
+
+        profileRepository.save(profile);
+    }
 }

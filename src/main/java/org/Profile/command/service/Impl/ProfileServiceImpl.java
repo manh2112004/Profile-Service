@@ -2,6 +2,7 @@ package org.Profile.command.service.Impl;
 
 import org.Profile.command.command.AddEducationToProfileCommand;
 import org.Profile.command.command.CreateProfileCommand;
+import org.Profile.command.command.UpdateProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileCommand;
 import org.Profile.command.data.Profile;
 import org.Profile.command.data.ProfileRepository;
@@ -123,6 +124,46 @@ public class ProfileServiceImpl implements ProfileService {
         AddEducationToProfileCommand command = AddEducationToProfileCommand.builder()
                 .profileId(profile.getId())
                 .educationId(UUID.randomUUID().toString())
+                .schoolName(request.getSchoolName())
+                .degree(request.getDegree())
+                .fieldOfStudy(request.getFieldOfStudy())
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .currentlyStudying(request.getCurrentlyStudying())
+                .description(request.getDescription())
+                .build();
+
+        return commandGateway.send(command);
+    }
+
+    @Override
+    public CompletableFuture<String> updateEducation(
+            String userId,
+            String profileId,
+            String educationId,
+            CreateEducationRequest request
+    ) {
+        if (userId == null || userId.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
+        }
+
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        if (!profile.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền cập nhật profile này");
+        }
+
+        boolean educationExists = profile.getEducations().stream()
+                .anyMatch(education -> education.getId().equals(educationId));
+
+        if (!educationExists) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Học vấn không tồn tại");
+        }
+
+        UpdateProfileEducationCommand command = UpdateProfileEducationCommand.builder()
+                .profileId(profile.getId())
+                .educationId(educationId)
                 .schoolName(request.getSchoolName())
                 .degree(request.getDegree())
                 .fieldOfStudy(request.getFieldOfStudy())

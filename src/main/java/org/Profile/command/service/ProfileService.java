@@ -12,4 +12,11 @@ public interface ProfileService {
     CompletableFuture<String> updateMyProfile(String userId, UpdateProfileRequest request);
 
     CompletableFuture<String> addEducation(String userId, String profileId, CreateEducationRequest request);
+
+    CompletableFuture<String> updateEducation(
+            String userId,
+            String profileId,
+            String educationId,
+            CreateEducationRequest request
+    );
 }

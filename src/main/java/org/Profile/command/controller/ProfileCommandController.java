@@ -47,4 +47,14 @@ public class ProfileCommandController {
     ) {
         return profileService.addEducation(jwt.getSubject(), profileId, request);
     }
+
+    @PutMapping("/{profileId}/educations/{educationId}")
+    public CompletableFuture<String> updateEducation(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String profileId,
+            @PathVariable String educationId,
+            @RequestBody CreateEducationRequest request
+    ) {
+        return profileService.updateEducation(jwt.getSubject(), profileId, educationId, request);
+    }
 }
