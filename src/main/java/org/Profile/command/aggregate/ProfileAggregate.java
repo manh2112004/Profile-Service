@@ -1,7 +1,9 @@
 package org.Profile.command.aggregate;
 
+import org.Profile.command.command.AddEducationToProfileCommand;
 import org.Profile.command.command.CreateProfileCommand;
 import org.Profile.command.command.UpdateProfileCommand;
+import org.Profile.command.event.EducationAddedToProfileEvent;
 import org.Profile.command.event.ProfileCreatedEvent;
 import org.Profile.command.event.ProfileUpdatedEvent;
 import org.axonframework.commandhandling.CommandHandler;
@@ -77,6 +79,22 @@ public class ProfileAggregate {
         return "Cập nhật profile thành công";
     }
 
+    @CommandHandler
+    public String handle(AddEducationToProfileCommand command) {
+        AggregateLifecycle.apply(EducationAddedToProfileEvent.builder()
+                .profileId(command.getProfileId())
+                .educationId(command.getEducationId())
+                .schoolName(command.getSchoolName())
+                .degree(command.getDegree())
+                .fieldOfStudy(command.getFieldOfStudy())
+                .startDate(command.getStartDate())
+                .endDate(command.getEndDate())
+                .currentlyStudying(command.getCurrentlyStudying())
+                .description(command.getDescription())
+                .build());
+        return "Thêm học vấn thành công";
+    }
+
     @EventSourcingHandler
     public void on(ProfileCreatedEvent event) {
         this.id = event.getId();
@@ -88,5 +106,10 @@ public class ProfileAggregate {
     public void on(ProfileUpdatedEvent event) {
         this.id = event.getId();
         this.fullName = event.getFullName();
+    }
+
+    @EventSourcingHandler
+    public void on(EducationAddedToProfileEvent event) {
+        this.id = event.getProfileId();
     }
 }

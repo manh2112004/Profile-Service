@@ -1,12 +1,14 @@
 package org.Profile.command.controller;
 
 import jakarta.validation.Valid;
+import org.Profile.command.model.request.CreateEducationRequest;
 import org.Profile.command.model.request.CreateProfileRequest;
 import org.Profile.command.model.request.UpdateProfileRequest;
 import org.Profile.command.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,5 +37,14 @@ public class ProfileCommandController {
             @Valid @RequestBody UpdateProfileRequest request
     ) {
         return profileService.updateMyProfile(jwt.getSubject(), request);
+    }
+
+    @PostMapping("/{profileId}/educations")
+    public CompletableFuture<String> addEducation(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String profileId,
+            @RequestBody CreateEducationRequest request
+    ) {
+        return profileService.addEducation(jwt.getSubject(), profileId, request);
     }
 }
