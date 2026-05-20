@@ -291,4 +291,20 @@ public class ProfileEventHandler {
 
         profileRepository.save(profile);
     }
+
+    @EventHandler
+    @Transactional
+    public void on(ProfileEducationDeletedEvent event) {
+        Profile profile = profileRepository.findById(event.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        boolean removed = profile.getEducations()
+                .removeIf(education -> education.getId().equals(event.getEducationId()));
+
+        if (!removed) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Học vấn không tồn tại");
+        }
+
+        profileRepository.save(profile);
+    }
 }

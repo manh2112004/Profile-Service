@@ -2,6 +2,7 @@ package org.Profile.command.service.Impl;
 
 import org.Profile.command.command.AddEducationToProfileCommand;
 import org.Profile.command.command.CreateProfileCommand;
+import org.Profile.command.command.DeleteProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileCommand;
 import org.Profile.command.data.Profile;
@@ -174,5 +175,28 @@ public class ProfileServiceImpl implements ProfileService {
                 .build();
 
         return commandGateway.send(command);
+    }
+
+    @Override
+    public CompletableFuture<String> deleteEducation(String userId, String profileId, String educationId) {
+        if (userId == null || userId.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
+        }
+
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        if (!profile.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền cập nhật profile này");
+        }
+
+        boolean educationExists = profile.getEducations().stream()
+                .anyMatch(education -> education.getId().equals(educationId));
+
+        if (!educationExists) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Học vấn không tồn tại");
+        }
+
+        return commandGateway.send(new DeleteProfileEducationCommand(profile.getId(), educationId));
     }
 }

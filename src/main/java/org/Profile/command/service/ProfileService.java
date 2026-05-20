@@ -19,4 +19,6 @@ public interface ProfileService {
             String educationId,
             CreateEducationRequest request
     );
+
+    CompletableFuture<String> deleteEducation(String userId, String profileId, String educationId);
 }
