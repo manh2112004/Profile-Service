@@ -64,15 +64,19 @@ public class Profile {
     private ProfileStatus status;
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private Set<Education> educations = new HashSet<>();
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private Set<WorkExperience> experiences = new HashSet<>();
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private Set<ProfileSkill> skills = new HashSet<>();
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private Set<SocialLink> socialLinks = new HashSet<>();
 
     @CreationTimestamp
