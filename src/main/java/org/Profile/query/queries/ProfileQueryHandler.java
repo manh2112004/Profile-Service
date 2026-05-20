@@ -34,6 +34,14 @@ public class ProfileQueryHandler {
         return mapToResponse(profile);
     }
 
+    @QueryHandler
+    @Transactional(readOnly = true)
+    public ProfileResponse handle(GetProfileByIdQuery query) {
+        Profile profile = profileRepository.findById(query.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+        return mapToResponse(profile);
+    }
+
     private ProfileResponse mapToResponse(Profile profile) {
         return ProfileResponse.builder()
                 .id(profile.getId())
