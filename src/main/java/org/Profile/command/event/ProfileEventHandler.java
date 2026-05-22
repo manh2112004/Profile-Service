@@ -258,6 +258,27 @@ public class ProfileEventHandler {
 
     @EventHandler
     @Transactional
+    public void on(ExperienceAddedToProfileEvent event) {
+        Profile profile = profileRepository.findById(event.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        WorkExperience experience = WorkExperience.builder()
+                .id(event.getExperienceId())
+                .companyName(event.getCompanyName())
+                .position(event.getPosition())
+                .startDate(event.getStartDate())
+                .endDate(event.getEndDate())
+                .currentlyWorking(event.getCurrentlyWorking())
+                .description(event.getDescription())
+                .profile(profile)
+                .build();
+
+        profile.getExperiences().add(experience);
+        profileRepository.save(profile);
+    }
+
+    @EventHandler
+    @Transactional
     public void on(ProfileEducationUpdatedEvent event) {
         Profile profile = profileRepository.findById(event.getProfileId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));

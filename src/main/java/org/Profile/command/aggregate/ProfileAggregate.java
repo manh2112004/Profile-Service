@@ -1,11 +1,13 @@
 package org.Profile.command.aggregate;
 
 import org.Profile.command.command.AddEducationToProfileCommand;
+import org.Profile.command.command.AddExperienceToProfileCommand;
 import org.Profile.command.command.CreateProfileCommand;
 import org.Profile.command.command.DeleteProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileCommand;
 import org.Profile.command.event.EducationAddedToProfileEvent;
+import org.Profile.command.event.ExperienceAddedToProfileEvent;
 import org.Profile.command.event.ProfileCreatedEvent;
 import org.Profile.command.event.ProfileEducationDeletedEvent;
 import org.Profile.command.event.ProfileEducationUpdatedEvent;
@@ -100,6 +102,21 @@ public class ProfileAggregate {
     }
 
     @CommandHandler
+    public String handle(AddExperienceToProfileCommand command) {
+        AggregateLifecycle.apply(ExperienceAddedToProfileEvent.builder()
+                .profileId(command.getProfileId())
+                .experienceId(command.getExperienceId())
+                .companyName(command.getCompanyName())
+                .position(command.getPosition())
+                .startDate(command.getStartDate())
+                .endDate(command.getEndDate())
+                .currentlyWorking(command.getCurrentlyWorking())
+                .description(command.getDescription())
+                .build());
+        return "Thêm kinh nghiệm làm việc thành công";
+    }
+
+    @CommandHandler
     public String handle(UpdateProfileEducationCommand command) {
         AggregateLifecycle.apply(ProfileEducationUpdatedEvent.builder()
                 .profileId(command.getProfileId())
@@ -139,6 +156,11 @@ public class ProfileAggregate {
 
     @EventSourcingHandler
     public void on(EducationAddedToProfileEvent event) {
+        this.id = event.getProfileId();
+    }
+
+    @EventSourcingHandler
+    public void on(ExperienceAddedToProfileEvent event) {
         this.id = event.getProfileId();
     }
 

@@ -3,6 +3,7 @@ package org.Profile.command.controller;
 import jakarta.validation.Valid;
 import org.Profile.command.model.request.CreateEducationRequest;
 import org.Profile.command.model.request.CreateProfileRequest;
+import org.Profile.command.model.request.CreateWorkExperienceRequest;
 import org.Profile.command.model.request.UpdateProfileRequest;
 import org.Profile.command.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,15 @@ public class ProfileCommandController {
             @RequestBody CreateEducationRequest request
     ) {
         return profileService.addEducation(jwt.getSubject(), profileId, request);
+    }
+
+    @PostMapping("/{profileId}/experiences")
+    public CompletableFuture<String> addExperience(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String profileId,
+            @RequestBody CreateWorkExperienceRequest request
+    ) {
+        return profileService.addExperience(jwt.getSubject(), profileId, request);
     }
 
     @PutMapping("/{profileId}/educations/{educationId}")
