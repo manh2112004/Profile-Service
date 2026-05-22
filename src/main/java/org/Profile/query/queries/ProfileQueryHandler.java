@@ -60,6 +60,20 @@ public class ProfileQueryHandler {
 
     @QueryHandler
     @Transactional(readOnly = true)
+    public WorkExperienceResponse handle(GetProfileExperienceDetailQuery query) {
+        Profile profile = profileRepository.findById(query.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        WorkExperience experience = profile.getExperiences().stream()
+                .filter(existingExperience -> existingExperience.getId().equals(query.getExperienceId()))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kinh nghiệm làm việc không tồn tại"));
+
+        return mapExperience(experience);
+    }
+
+    @QueryHandler
+    @Transactional(readOnly = true)
     public EducationResponse handle(GetProfileEducationDetailQuery query) {
         Profile profile = profileRepository.findById(query.getProfileId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));

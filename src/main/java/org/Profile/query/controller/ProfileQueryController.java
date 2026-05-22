@@ -7,6 +7,7 @@ import org.Profile.query.queries.GetMyProfileQuery;
 import org.Profile.query.queries.GetProfileByIdQuery;
 import org.Profile.query.queries.GetProfileEducationDetailQuery;
 import org.Profile.query.queries.GetProfileEducationsQuery;
+import org.Profile.query.queries.GetProfileExperienceDetailQuery;
 import org.Profile.query.queries.GetProfileExperiencesQuery;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -56,6 +57,17 @@ public class ProfileQueryController {
         return queryGateway.query(
                 new GetProfileExperiencesQuery(profileId),
                 ResponseTypes.multipleInstancesOf(WorkExperienceResponse.class)
+        );
+    }
+
+    @GetMapping("/{profileId}/experiences/{experienceId}")
+    public CompletableFuture<WorkExperienceResponse> getProfileExperienceDetail(
+            @PathVariable String profileId,
+            @PathVariable String experienceId
+    ) {
+        return queryGateway.query(
+                new GetProfileExperienceDetailQuery(profileId, experienceId),
+                ResponseTypes.instanceOf(WorkExperienceResponse.class)
         );
     }
 
