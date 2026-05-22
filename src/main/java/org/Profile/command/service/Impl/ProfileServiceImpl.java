@@ -20,6 +20,7 @@ import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collections;
@@ -169,6 +170,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CompletableFuture<String> updateEducation(
             String userId,
             String profileId,
@@ -209,6 +211,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CompletableFuture<String> updateExperience(
             String userId,
             String profileId,
@@ -248,6 +251,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CompletableFuture<String> deleteEducation(String userId, String profileId, String educationId) {
         if (userId == null || userId.isBlank()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
@@ -271,6 +275,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CompletableFuture<String> deleteExperience(String userId, String profileId, String experienceId) {
         if (userId == null || userId.isBlank()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
