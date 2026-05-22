@@ -52,6 +52,14 @@ public class ProfileQueryHandler {
 
     @QueryHandler
     @Transactional(readOnly = true)
+    public List<WorkExperienceResponse> handle(GetProfileExperiencesQuery query) {
+        Profile profile = profileRepository.findById(query.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+        return mapExperiences(profile);
+    }
+
+    @QueryHandler
+    @Transactional(readOnly = true)
     public EducationResponse handle(GetProfileEducationDetailQuery query) {
         Profile profile = profileRepository.findById(query.getProfileId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
@@ -117,16 +125,20 @@ public class ProfileQueryHandler {
     private List<WorkExperienceResponse> mapExperiences(Profile profile) {
         return profile.getExperiences().stream()
                 .sorted(Comparator.comparing(WorkExperience::getStartDate, Comparator.nullsLast(Comparator.reverseOrder())))
-                .map(experience -> WorkExperienceResponse.builder()
-                        .id(experience.getId())
-                        .companyName(experience.getCompanyName())
-                        .position(experience.getPosition())
-                        .startDate(experience.getStartDate())
-                        .endDate(experience.getEndDate())
-                        .currentlyWorking(experience.getCurrentlyWorking())
-                        .description(experience.getDescription())
-                        .build())
+                .map(this::mapExperience)
                 .toList();
+    }
+
+    private WorkExperienceResponse mapExperience(WorkExperience experience) {
+        return WorkExperienceResponse.builder()
+                .id(experience.getId())
+                .companyName(experience.getCompanyName())
+                .position(experience.getPosition())
+                .startDate(experience.getStartDate())
+                .endDate(experience.getEndDate())
+                .currentlyWorking(experience.getCurrentlyWorking())
+                .description(experience.getDescription())
+                .build();
     }
 
     private List<ProfileSkillResponse> mapSkills(Profile profile) {
