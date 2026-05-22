@@ -315,6 +315,39 @@ public class ProfileEventHandler {
 
     @EventHandler
     @Transactional
+    public void on(ProfileExperienceUpdatedEvent event) {
+        Profile profile = profileRepository.findById(event.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        WorkExperience experience = profile.getExperiences().stream()
+                .filter(existingExperience -> existingExperience.getId().equals(event.getExperienceId()))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kinh nghiệm làm việc không tồn tại"));
+
+        if (event.getCompanyName() != null) {
+            experience.setCompanyName(event.getCompanyName());
+        }
+        if (event.getPosition() != null) {
+            experience.setPosition(event.getPosition());
+        }
+        if (event.getStartDate() != null) {
+            experience.setStartDate(event.getStartDate());
+        }
+        if (event.getEndDate() != null) {
+            experience.setEndDate(event.getEndDate());
+        }
+        if (event.getCurrentlyWorking() != null) {
+            experience.setCurrentlyWorking(event.getCurrentlyWorking());
+        }
+        if (event.getDescription() != null) {
+            experience.setDescription(event.getDescription());
+        }
+
+        profileRepository.save(profile);
+    }
+
+    @EventHandler
+    @Transactional
     public void on(ProfileEducationDeletedEvent event) {
         Profile profile = profileRepository.findById(event.getProfileId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));

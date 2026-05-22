@@ -23,5 +23,12 @@ public interface ProfileService {
             CreateEducationRequest request
     );
 
+    CompletableFuture<String> updateExperience(
+            String userId,
+            String profileId,
+            String experienceId,
+            CreateWorkExperienceRequest request
+    );
+
     CompletableFuture<String> deleteEducation(String userId, String profileId, String educationId);
 }

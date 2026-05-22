@@ -69,6 +69,16 @@ public class ProfileCommandController {
         return profileService.updateEducation(jwt.getSubject(), profileId, educationId, request);
     }
 
+    @PutMapping("/{profileId}/experiences/{experienceId}")
+    public CompletableFuture<String> updateExperience(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String profileId,
+            @PathVariable String experienceId,
+            @RequestBody CreateWorkExperienceRequest request
+    ) {
+        return profileService.updateExperience(jwt.getSubject(), profileId, experienceId, request);
+    }
+
     @DeleteMapping("/{profileId}/educations/{educationId}")
     public CompletableFuture<String> deleteEducation(
             @AuthenticationPrincipal Jwt jwt,

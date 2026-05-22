@@ -5,12 +5,14 @@ import org.Profile.command.command.AddExperienceToProfileCommand;
 import org.Profile.command.command.CreateProfileCommand;
 import org.Profile.command.command.DeleteProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileEducationCommand;
+import org.Profile.command.command.UpdateProfileExperienceCommand;
 import org.Profile.command.command.UpdateProfileCommand;
 import org.Profile.command.event.EducationAddedToProfileEvent;
 import org.Profile.command.event.ExperienceAddedToProfileEvent;
 import org.Profile.command.event.ProfileCreatedEvent;
 import org.Profile.command.event.ProfileEducationDeletedEvent;
 import org.Profile.command.event.ProfileEducationUpdatedEvent;
+import org.Profile.command.event.ProfileExperienceUpdatedEvent;
 import org.Profile.command.event.ProfileUpdatedEvent;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
@@ -133,6 +135,21 @@ public class ProfileAggregate {
     }
 
     @CommandHandler
+    public String handle(UpdateProfileExperienceCommand command) {
+        AggregateLifecycle.apply(ProfileExperienceUpdatedEvent.builder()
+                .profileId(command.getProfileId())
+                .experienceId(command.getExperienceId())
+                .companyName(command.getCompanyName())
+                .position(command.getPosition())
+                .startDate(command.getStartDate())
+                .endDate(command.getEndDate())
+                .currentlyWorking(command.getCurrentlyWorking())
+                .description(command.getDescription())
+                .build());
+        return "Cập nhật kinh nghiệm làm việc thành công";
+    }
+
+    @CommandHandler
     public String handle(DeleteProfileEducationCommand command) {
         AggregateLifecycle.apply(new ProfileEducationDeletedEvent(
                 command.getProfileId(),
@@ -166,6 +183,11 @@ public class ProfileAggregate {
 
     @EventSourcingHandler
     public void on(ProfileEducationUpdatedEvent event) {
+        this.id = event.getProfileId();
+    }
+
+    @EventSourcingHandler
+    public void on(ProfileExperienceUpdatedEvent event) {
         this.id = event.getProfileId();
     }
 
