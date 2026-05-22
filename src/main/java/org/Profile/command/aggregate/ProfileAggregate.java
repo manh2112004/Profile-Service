@@ -3,6 +3,7 @@ package org.Profile.command.aggregate;
 import org.Profile.command.command.AddEducationToProfileCommand;
 import org.Profile.command.command.AddExperienceToProfileCommand;
 import org.Profile.command.command.CreateProfileCommand;
+import org.Profile.command.command.DeleteProfileExperienceCommand;
 import org.Profile.command.command.DeleteProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileExperienceCommand;
@@ -12,6 +13,7 @@ import org.Profile.command.event.ExperienceAddedToProfileEvent;
 import org.Profile.command.event.ProfileCreatedEvent;
 import org.Profile.command.event.ProfileEducationDeletedEvent;
 import org.Profile.command.event.ProfileEducationUpdatedEvent;
+import org.Profile.command.event.ProfileExperienceDeletedEvent;
 import org.Profile.command.event.ProfileExperienceUpdatedEvent;
 import org.Profile.command.event.ProfileUpdatedEvent;
 import org.axonframework.commandhandling.CommandHandler;
@@ -158,6 +160,15 @@ public class ProfileAggregate {
         return "Xóa học vấn thành công";
     }
 
+    @CommandHandler
+    public String handle(DeleteProfileExperienceCommand command) {
+        AggregateLifecycle.apply(new ProfileExperienceDeletedEvent(
+                command.getProfileId(),
+                command.getExperienceId()
+        ));
+        return "Xóa kinh nghiệm làm việc thành công";
+    }
+
     @EventSourcingHandler
     public void on(ProfileCreatedEvent event) {
         this.id = event.getId();
@@ -188,6 +199,11 @@ public class ProfileAggregate {
 
     @EventSourcingHandler
     public void on(ProfileExperienceUpdatedEvent event) {
+        this.id = event.getProfileId();
+    }
+
+    @EventSourcingHandler
+    public void on(ProfileExperienceDeletedEvent event) {
         this.id = event.getProfileId();
     }
 

@@ -361,4 +361,20 @@ public class ProfileEventHandler {
 
         profileRepository.save(profile);
     }
+
+    @EventHandler
+    @Transactional
+    public void on(ProfileExperienceDeletedEvent event) {
+        Profile profile = profileRepository.findById(event.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        boolean removed = profile.getExperiences()
+                .removeIf(experience -> experience.getId().equals(event.getExperienceId()));
+
+        if (!removed) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Kinh nghiệm làm việc không tồn tại");
+        }
+
+        profileRepository.save(profile);
+    }
 }
