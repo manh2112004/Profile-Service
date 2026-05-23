@@ -55,4 +55,6 @@ public interface ProfileService {
     CompletableFuture<String> deleteExperience(String userId, String profileId, String experienceId);
 
     CompletableFuture<String> deleteSkill(String userId, String profileId, String skillId);
+
+    CompletableFuture<String> deleteSocialLink(String userId, String profileId, String socialLinkId);
 }

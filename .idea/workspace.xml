@@ -4,15 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3ed3a90c-3e0c-4d03-86e2-8762a49d2310" name="Changes" comment="api add social in profile">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="3ed3a90c-3e0c-4d03-86e2-8762a49d2310" name="Changes" comment="api get all,update social in profile">
       <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/command/aggregate/ProfileAggregate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/command/aggregate/ProfileAggregate.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/command/controller/ProfileCommandController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/command/controller/ProfileCommandController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/command/event/ProfileEventHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/command/event/ProfileEventHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/command/service/Impl/ProfileServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/command/service/Impl/ProfileServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/command/service/ProfileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/command/service/ProfileService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/query/controller/ProfileQueryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/query/controller/ProfileQueryController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/query/queries/ProfileQueryHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/query/queries/ProfileQueryHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -182,7 +179,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779506260962</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="api get all,update social in profile">
+      <option name="closed" value="true" />
+      <created>1779507076961</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1779507076962</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -201,6 +206,7 @@
     <MESSAGE value="api update skill in profile" />
     <MESSAGE value="api delete skill in profile" />
     <MESSAGE value="api add social in profile" />
-    <option name="LAST_COMMIT_MESSAGE" value="api add social in profile" />
+    <MESSAGE value="api get all,update social in profile" />
+    <option name="LAST_COMMIT_MESSAGE" value="api get all,update social in profile" />
   </component>
 </project>

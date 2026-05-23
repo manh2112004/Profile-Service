@@ -8,6 +8,7 @@ import org.Profile.command.command.CreateProfileCommand;
 import org.Profile.command.command.DeleteProfileEducationCommand;
 import org.Profile.command.command.DeleteProfileExperienceCommand;
 import org.Profile.command.command.DeleteProfileSkillCommand;
+import org.Profile.command.command.DeleteProfileSocialLinkCommand;
 import org.Profile.command.command.UpdateProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileExperienceCommand;
 import org.Profile.command.command.UpdateProfileCommand;
@@ -447,5 +448,29 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         return commandGateway.send(new DeleteProfileSkillCommand(profile.getId(), skillId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CompletableFuture<String> deleteSocialLink(String userId, String profileId, String socialLinkId) {
+        if (userId == null || userId.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
+        }
+
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        if (!profile.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền cập nhật profile này");
+        }
+
+        boolean socialLinkExists = profile.getSocialLinks().stream()
+                .anyMatch(socialLink -> socialLink.getId().equals(socialLinkId));
+
+        if (!socialLinkExists) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Liên kết mạng xã hội không tồn tại");
+        }
+
+        return commandGateway.send(new DeleteProfileSocialLinkCommand(profile.getId(), socialLinkId));
     }
 }

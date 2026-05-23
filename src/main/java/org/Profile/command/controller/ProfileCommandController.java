@@ -145,4 +145,13 @@ public class ProfileCommandController {
     ) {
         return profileService.deleteSkill(jwt.getSubject(), profileId, skillId);
     }
+
+    @DeleteMapping("/{profileId}/social-links/{socialLinkId}")
+    public CompletableFuture<String> deleteSocialLink(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String profileId,
+            @PathVariable String socialLinkId
+    ) {
+        return profileService.deleteSocialLink(jwt.getSubject(), profileId, socialLinkId);
+    }
 }

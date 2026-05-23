@@ -473,4 +473,20 @@ public class ProfileEventHandler {
 
         profileRepository.save(profile);
     }
+
+    @EventHandler
+    @Transactional
+    public void on(ProfileSocialLinkDeletedEvent event) {
+        Profile profile = profileRepository.findById(event.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        boolean removed = profile.getSocialLinks()
+                .removeIf(socialLink -> socialLink.getId().equals(event.getSocialLinkId()));
+
+        if (!removed) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Liên kết mạng xã hội không tồn tại");
+        }
+
+        profileRepository.save(profile);
+    }
 }
