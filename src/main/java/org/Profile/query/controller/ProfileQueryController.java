@@ -4,6 +4,7 @@ import org.Profile.query.model.response.ProfileResponse;
 import org.Profile.query.model.response.EducationResponse;
 import org.Profile.query.model.response.ProfileSkillResponse;
 import org.Profile.query.model.response.WorkExperienceResponse;
+import org.Profile.query.model.response.SocialLinkResponse;
 import org.Profile.query.queries.GetMyProfileQuery;
 import org.Profile.query.queries.GetProfileByIdQuery;
 import org.Profile.query.queries.GetProfileEducationDetailQuery;
@@ -11,6 +12,7 @@ import org.Profile.query.queries.GetProfileEducationsQuery;
 import org.Profile.query.queries.GetProfileExperienceDetailQuery;
 import org.Profile.query.queries.GetProfileExperiencesQuery;
 import org.Profile.query.queries.GetProfileSkillsQuery;
+import org.Profile.query.queries.GetProfileSocialLinksQuery;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +69,14 @@ public class ProfileQueryController {
         return queryGateway.query(
                 new GetProfileSkillsQuery(profileId),
                 ResponseTypes.multipleInstancesOf(ProfileSkillResponse.class)
+        );
+    }
+
+    @GetMapping("/{profileId}/social-links")
+    public CompletableFuture<List<SocialLinkResponse>> getProfileSocialLinks(@PathVariable String profileId) {
+        return queryGateway.query(
+                new GetProfileSocialLinksQuery(profileId),
+                ResponseTypes.multipleInstancesOf(SocialLinkResponse.class)
         );
     }
 

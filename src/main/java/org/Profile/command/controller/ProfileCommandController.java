@@ -109,6 +109,16 @@ public class ProfileCommandController {
         return profileService.updateSkill(jwt.getSubject(), profileId, skillId, request);
     }
 
+    @PutMapping("/{profileId}/social-links/{socialLinkId}")
+    public CompletableFuture<String> updateSocialLink(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String profileId,
+            @PathVariable String socialLinkId,
+            @RequestBody CreateSocialLinkRequest request
+    ) {
+        return profileService.updateSocialLink(jwt.getSubject(), profileId, socialLinkId, request);
+    }
+
     @DeleteMapping("/{profileId}/educations/{educationId}")
     public CompletableFuture<String> deleteEducation(
             @AuthenticationPrincipal Jwt jwt,

@@ -12,6 +12,7 @@ import org.Profile.command.command.UpdateProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileExperienceCommand;
 import org.Profile.command.command.UpdateProfileCommand;
 import org.Profile.command.command.UpdateProfileSkillCommand;
+import org.Profile.command.command.UpdateProfileSocialLinkCommand;
 import org.Profile.command.data.Profile;
 import org.Profile.command.data.ProfileRepository;
 import org.Profile.command.model.request.CreateEducationRequest;
@@ -335,6 +336,42 @@ public class ProfileServiceImpl implements ProfileService {
                 .skillName(request.getSkillName())
                 .level(request.getLevel())
                 .yearsOfExperience(request.getYearsOfExperience())
+                .build();
+
+        return commandGateway.send(command);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CompletableFuture<String> updateSocialLink(
+            String userId,
+            String profileId,
+            String socialLinkId,
+            CreateSocialLinkRequest request
+    ) {
+        if (userId == null || userId.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
+        }
+
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        if (!profile.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền cập nhật profile này");
+        }
+
+        boolean socialLinkExists = profile.getSocialLinks().stream()
+                .anyMatch(socialLink -> socialLink.getId().equals(socialLinkId));
+
+        if (!socialLinkExists) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Liên kết mạng xã hội không tồn tại");
+        }
+
+        UpdateProfileSocialLinkCommand command = UpdateProfileSocialLinkCommand.builder()
+                .profileId(profile.getId())
+                .socialLinkId(socialLinkId)
+                .platform(request.getPlatform())
+                .url(request.getUrl())
                 .build();
 
         return commandGateway.send(command);

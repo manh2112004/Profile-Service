@@ -68,6 +68,14 @@ public class ProfileQueryHandler {
 
     @QueryHandler
     @Transactional(readOnly = true)
+    public List<SocialLinkResponse> handle(GetProfileSocialLinksQuery query) {
+        Profile profile = profileRepository.findById(query.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+        return mapSocialLinks(profile);
+    }
+
+    @QueryHandler
+    @Transactional(readOnly = true)
     public WorkExperienceResponse handle(GetProfileExperienceDetailQuery query) {
         Profile profile = profileRepository.findById(query.getProfileId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
@@ -182,11 +190,15 @@ public class ProfileQueryHandler {
     private List<SocialLinkResponse> mapSocialLinks(Profile profile) {
         return profile.getSocialLinks().stream()
                 .sorted(Comparator.comparing(link -> link.getPlatform() == null ? "" : link.getPlatform().name()))
-                .map(link -> SocialLinkResponse.builder()
-                        .id(link.getId())
-                        .platform(link.getPlatform())
-                        .url(link.getUrl())
-                        .build())
+                .map(this::mapSocialLink)
                 .toList();
+    }
+
+    private SocialLinkResponse mapSocialLink(SocialLink link) {
+        return SocialLinkResponse.builder()
+                .id(link.getId())
+                .platform(link.getPlatform())
+                .url(link.getUrl())
+                .build();
     }
 }

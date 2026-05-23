@@ -12,6 +12,7 @@ import org.Profile.command.command.UpdateProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileExperienceCommand;
 import org.Profile.command.command.UpdateProfileCommand;
 import org.Profile.command.command.UpdateProfileSkillCommand;
+import org.Profile.command.command.UpdateProfileSocialLinkCommand;
 import org.Profile.command.event.EducationAddedToProfileEvent;
 import org.Profile.command.event.ExperienceAddedToProfileEvent;
 import org.Profile.command.event.ProfileCreatedEvent;
@@ -21,6 +22,7 @@ import org.Profile.command.event.ProfileExperienceDeletedEvent;
 import org.Profile.command.event.ProfileExperienceUpdatedEvent;
 import org.Profile.command.event.ProfileSkillDeletedEvent;
 import org.Profile.command.event.ProfileSkillUpdatedEvent;
+import org.Profile.command.event.ProfileSocialLinkUpdatedEvent;
 import org.Profile.command.event.ProfileUpdatedEvent;
 import org.Profile.command.event.SkillAddedToProfileEvent;
 import org.Profile.command.event.SocialLinkAddedToProfileEvent;
@@ -195,6 +197,17 @@ public class ProfileAggregate {
     }
 
     @CommandHandler
+    public String handle(UpdateProfileSocialLinkCommand command) {
+        AggregateLifecycle.apply(ProfileSocialLinkUpdatedEvent.builder()
+                .profileId(command.getProfileId())
+                .socialLinkId(command.getSocialLinkId())
+                .platform(command.getPlatform())
+                .url(command.getUrl())
+                .build());
+        return "Cập nhật liên kết mạng xã hội thành công";
+    }
+
+    @CommandHandler
     public String handle(DeleteProfileEducationCommand command) {
         AggregateLifecycle.apply(new ProfileEducationDeletedEvent(
                 command.getProfileId(),
@@ -266,6 +279,11 @@ public class ProfileAggregate {
 
     @EventSourcingHandler
     public void on(ProfileSkillUpdatedEvent event) {
+        this.id = event.getProfileId();
+    }
+
+    @EventSourcingHandler
+    public void on(ProfileSocialLinkUpdatedEvent event) {
         this.id = event.getProfileId();
     }
 
