@@ -6,6 +6,7 @@ import org.Profile.command.command.AddSkillToProfileCommand;
 import org.Profile.command.command.CreateProfileCommand;
 import org.Profile.command.command.DeleteProfileEducationCommand;
 import org.Profile.command.command.DeleteProfileExperienceCommand;
+import org.Profile.command.command.DeleteProfileSkillCommand;
 import org.Profile.command.command.UpdateProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileExperienceCommand;
 import org.Profile.command.command.UpdateProfileCommand;
@@ -360,5 +361,29 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         return commandGateway.send(new DeleteProfileExperienceCommand(profile.getId(), experienceId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CompletableFuture<String> deleteSkill(String userId, String profileId, String skillId) {
+        if (userId == null || userId.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
+        }
+
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        if (!profile.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền cập nhật profile này");
+        }
+
+        boolean skillExists = profile.getSkills().stream()
+                .anyMatch(skill -> skill.getId().equals(skillId));
+
+        if (!skillExists) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Kỹ năng không tồn tại");
+        }
+
+        return commandGateway.send(new DeleteProfileSkillCommand(profile.getId(), skillId));
     }
 }

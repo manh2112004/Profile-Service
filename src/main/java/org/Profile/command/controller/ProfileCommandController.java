@@ -116,4 +116,13 @@ public class ProfileCommandController {
     ) {
         return profileService.deleteExperience(jwt.getSubject(), profileId, experienceId);
     }
+
+    @DeleteMapping("/{profileId}/skills/{skillId}")
+    public CompletableFuture<String> deleteSkill(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String profileId,
+            @PathVariable String skillId
+    ) {
+        return profileService.deleteSkill(jwt.getSubject(), profileId, skillId);
+    }
 }

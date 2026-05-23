@@ -419,4 +419,20 @@ public class ProfileEventHandler {
 
         profileRepository.save(profile);
     }
+
+    @EventHandler
+    @Transactional
+    public void on(ProfileSkillDeletedEvent event) {
+        Profile profile = profileRepository.findById(event.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        boolean removed = profile.getSkills()
+                .removeIf(skill -> skill.getId().equals(event.getSkillId()));
+
+        if (!removed) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Kỹ năng không tồn tại");
+        }
+
+        profileRepository.save(profile);
+    }
 }
