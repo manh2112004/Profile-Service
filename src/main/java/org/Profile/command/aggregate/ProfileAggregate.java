@@ -3,6 +3,7 @@ package org.Profile.command.aggregate;
 import org.Profile.command.command.AddEducationToProfileCommand;
 import org.Profile.command.command.AddExperienceToProfileCommand;
 import org.Profile.command.command.AddSkillToProfileCommand;
+import org.Profile.command.command.AddSocialLinkToProfileCommand;
 import org.Profile.command.command.CreateProfileCommand;
 import org.Profile.command.command.DeleteProfileExperienceCommand;
 import org.Profile.command.command.DeleteProfileEducationCommand;
@@ -22,6 +23,7 @@ import org.Profile.command.event.ProfileSkillDeletedEvent;
 import org.Profile.command.event.ProfileSkillUpdatedEvent;
 import org.Profile.command.event.ProfileUpdatedEvent;
 import org.Profile.command.event.SkillAddedToProfileEvent;
+import org.Profile.command.event.SocialLinkAddedToProfileEvent;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -139,6 +141,17 @@ public class ProfileAggregate {
     }
 
     @CommandHandler
+    public String handle(AddSocialLinkToProfileCommand command) {
+        AggregateLifecycle.apply(SocialLinkAddedToProfileEvent.builder()
+                .profileId(command.getProfileId())
+                .socialLinkId(command.getSocialLinkId())
+                .platform(command.getPlatform())
+                .url(command.getUrl())
+                .build());
+        return "Thêm liên kết mạng xã hội thành công";
+    }
+
+    @CommandHandler
     public String handle(UpdateProfileEducationCommand command) {
         AggregateLifecycle.apply(ProfileEducationUpdatedEvent.builder()
                 .profileId(command.getProfileId())
@@ -233,6 +246,11 @@ public class ProfileAggregate {
 
     @EventSourcingHandler
     public void on(SkillAddedToProfileEvent event) {
+        this.id = event.getProfileId();
+    }
+
+    @EventSourcingHandler
+    public void on(SocialLinkAddedToProfileEvent event) {
         this.id = event.getProfileId();
     }
 

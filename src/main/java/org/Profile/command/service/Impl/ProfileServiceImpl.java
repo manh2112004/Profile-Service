@@ -3,6 +3,7 @@ package org.Profile.command.service.Impl;
 import org.Profile.command.command.AddEducationToProfileCommand;
 import org.Profile.command.command.AddExperienceToProfileCommand;
 import org.Profile.command.command.AddSkillToProfileCommand;
+import org.Profile.command.command.AddSocialLinkToProfileCommand;
 import org.Profile.command.command.CreateProfileCommand;
 import org.Profile.command.command.DeleteProfileEducationCommand;
 import org.Profile.command.command.DeleteProfileExperienceCommand;
@@ -16,6 +17,7 @@ import org.Profile.command.data.ProfileRepository;
 import org.Profile.command.model.request.CreateEducationRequest;
 import org.Profile.command.model.request.CreateProfileRequest;
 import org.Profile.command.model.request.CreateProfileSkillRequest;
+import org.Profile.command.model.request.CreateSocialLinkRequest;
 import org.Profile.command.model.request.CreateWorkExperienceRequest;
 import org.Profile.command.model.request.UpdateProfileRequest;
 import org.Profile.command.service.ProfileService;
@@ -192,6 +194,29 @@ public class ProfileServiceImpl implements ProfileService {
                 .skillName(request.getSkillName())
                 .level(request.getLevel())
                 .yearsOfExperience(request.getYearsOfExperience())
+                .build();
+
+        return commandGateway.send(command);
+    }
+
+    @Override
+    public CompletableFuture<String> addSocialLink(String userId, String profileId, CreateSocialLinkRequest request) {
+        if (userId == null || userId.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
+        }
+
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        if (!profile.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền cập nhật profile này");
+        }
+
+        AddSocialLinkToProfileCommand command = AddSocialLinkToProfileCommand.builder()
+                .profileId(profile.getId())
+                .socialLinkId(UUID.randomUUID().toString())
+                .platform(request.getPlatform())
+                .url(request.getUrl())
                 .build();
 
         return commandGateway.send(command);

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.Profile.command.model.request.CreateEducationRequest;
 import org.Profile.command.model.request.CreateProfileRequest;
 import org.Profile.command.model.request.CreateProfileSkillRequest;
+import org.Profile.command.model.request.CreateSocialLinkRequest;
 import org.Profile.command.model.request.CreateWorkExperienceRequest;
 import org.Profile.command.model.request.UpdateProfileRequest;
 import org.Profile.command.service.ProfileService;
@@ -67,6 +68,15 @@ public class ProfileCommandController {
             @RequestBody CreateProfileSkillRequest request
     ) {
         return profileService.addSkill(jwt.getSubject(), profileId, request);
+    }
+
+    @PostMapping("/{profileId}/social-links")
+    public CompletableFuture<String> addSocialLink(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String profileId,
+            @RequestBody CreateSocialLinkRequest request
+    ) {
+        return profileService.addSocialLink(jwt.getSubject(), profileId, request);
     }
 
     @PutMapping("/{profileId}/educations/{educationId}")
