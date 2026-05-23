@@ -2,6 +2,7 @@ package org.Profile.command.service;
 
 import org.Profile.command.model.request.CreateProfileRequest;
 import org.Profile.command.model.request.CreateEducationRequest;
+import org.Profile.command.model.request.CreateProfileSkillRequest;
 import org.Profile.command.model.request.UpdateProfileRequest;
 import org.Profile.command.model.request.CreateWorkExperienceRequest;
 
@@ -15,6 +16,8 @@ public interface ProfileService {
     CompletableFuture<String> addEducation(String userId, String profileId, CreateEducationRequest request);
 
     CompletableFuture<String> addExperience(String userId, String profileId, CreateWorkExperienceRequest request);
+
+    CompletableFuture<String> addSkill(String userId, String profileId, CreateProfileSkillRequest request);
 
     CompletableFuture<String> updateEducation(
             String userId,
