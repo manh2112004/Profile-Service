@@ -2,6 +2,7 @@ package org.Profile.query.controller;
 
 import org.Profile.query.model.response.ProfileResponse;
 import org.Profile.query.model.response.EducationResponse;
+import org.Profile.query.model.response.ProfileSkillResponse;
 import org.Profile.query.model.response.WorkExperienceResponse;
 import org.Profile.query.queries.GetMyProfileQuery;
 import org.Profile.query.queries.GetProfileByIdQuery;
@@ -9,6 +10,7 @@ import org.Profile.query.queries.GetProfileEducationDetailQuery;
 import org.Profile.query.queries.GetProfileEducationsQuery;
 import org.Profile.query.queries.GetProfileExperienceDetailQuery;
 import org.Profile.query.queries.GetProfileExperiencesQuery;
+import org.Profile.query.queries.GetProfileSkillsQuery;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +59,14 @@ public class ProfileQueryController {
         return queryGateway.query(
                 new GetProfileExperiencesQuery(profileId),
                 ResponseTypes.multipleInstancesOf(WorkExperienceResponse.class)
+        );
+    }
+
+    @GetMapping("/{profileId}/skills")
+    public CompletableFuture<List<ProfileSkillResponse>> getProfileSkills(@PathVariable String profileId) {
+        return queryGateway.query(
+                new GetProfileSkillsQuery(profileId),
+                ResponseTypes.multipleInstancesOf(ProfileSkillResponse.class)
         );
     }
 

@@ -60,6 +60,14 @@ public class ProfileQueryHandler {
 
     @QueryHandler
     @Transactional(readOnly = true)
+    public List<ProfileSkillResponse> handle(GetProfileSkillsQuery query) {
+        Profile profile = profileRepository.findById(query.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+        return mapSkills(profile);
+    }
+
+    @QueryHandler
+    @Transactional(readOnly = true)
     public WorkExperienceResponse handle(GetProfileExperienceDetailQuery query) {
         Profile profile = profileRepository.findById(query.getProfileId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
@@ -158,13 +166,17 @@ public class ProfileQueryHandler {
     private List<ProfileSkillResponse> mapSkills(Profile profile) {
         return profile.getSkills().stream()
                 .sorted(Comparator.comparing(ProfileSkill::getSkillName, Comparator.nullsLast(String::compareToIgnoreCase)))
-                .map(skill -> ProfileSkillResponse.builder()
-                        .id(skill.getId())
-                        .skillName(skill.getSkillName())
-                        .level(skill.getLevel())
-                        .yearsOfExperience(skill.getYearsOfExperience())
-                        .build())
+                .map(this::mapSkill)
                 .toList();
+    }
+
+    private ProfileSkillResponse mapSkill(ProfileSkill skill) {
+        return ProfileSkillResponse.builder()
+                .id(skill.getId())
+                .skillName(skill.getSkillName())
+                .level(skill.getLevel())
+                .yearsOfExperience(skill.getYearsOfExperience())
+                .build();
     }
 
     private List<SocialLinkResponse> mapSocialLinks(Profile profile) {
