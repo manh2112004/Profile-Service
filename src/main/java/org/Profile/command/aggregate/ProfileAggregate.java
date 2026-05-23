@@ -9,6 +9,7 @@ import org.Profile.command.command.DeleteProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileExperienceCommand;
 import org.Profile.command.command.UpdateProfileCommand;
+import org.Profile.command.command.UpdateProfileSkillCommand;
 import org.Profile.command.event.EducationAddedToProfileEvent;
 import org.Profile.command.event.ExperienceAddedToProfileEvent;
 import org.Profile.command.event.ProfileCreatedEvent;
@@ -16,6 +17,7 @@ import org.Profile.command.event.ProfileEducationDeletedEvent;
 import org.Profile.command.event.ProfileEducationUpdatedEvent;
 import org.Profile.command.event.ProfileExperienceDeletedEvent;
 import org.Profile.command.event.ProfileExperienceUpdatedEvent;
+import org.Profile.command.event.ProfileSkillUpdatedEvent;
 import org.Profile.command.event.ProfileUpdatedEvent;
 import org.Profile.command.event.SkillAddedToProfileEvent;
 import org.axonframework.commandhandling.CommandHandler;
@@ -166,6 +168,18 @@ public class ProfileAggregate {
     }
 
     @CommandHandler
+    public String handle(UpdateProfileSkillCommand command) {
+        AggregateLifecycle.apply(ProfileSkillUpdatedEvent.builder()
+                .profileId(command.getProfileId())
+                .skillId(command.getSkillId())
+                .skillName(command.getSkillName())
+                .level(command.getLevel())
+                .yearsOfExperience(command.getYearsOfExperience())
+                .build());
+        return "Cập nhật kỹ năng thành công";
+    }
+
+    @CommandHandler
     public String handle(DeleteProfileEducationCommand command) {
         AggregateLifecycle.apply(new ProfileEducationDeletedEvent(
                 command.getProfileId(),
@@ -218,6 +232,11 @@ public class ProfileAggregate {
 
     @EventSourcingHandler
     public void on(ProfileExperienceUpdatedEvent event) {
+        this.id = event.getProfileId();
+    }
+
+    @EventSourcingHandler
+    public void on(ProfileSkillUpdatedEvent event) {
         this.id = event.getProfileId();
     }
 

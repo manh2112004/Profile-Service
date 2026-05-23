@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3ed3a90c-3e0c-4d03-86e2-8762a49d2310" name="Changes" comment="api add skill for profile">
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/query/controller/ProfileQueryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/query/controller/ProfileQueryController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/query/queries/ProfileQueryHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/query/queries/ProfileQueryHandler.java" afterDir="false" />
-    </list>
+    <list default="true" id="3ed3a90c-3e0c-4d03-86e2-8762a49d2310" name="Changes" comment="api get all skill in profile" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -144,7 +141,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779502942614</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="api get all skill in profile">
+      <option name="closed" value="true" />
+      <created>1779503517246</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1779503517246</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -159,6 +164,7 @@
     <MESSAGE value="api delete experiences in profile" />
     <MESSAGE value="config Exception global" />
     <MESSAGE value="api add skill for profile" />
-    <option name="LAST_COMMIT_MESSAGE" value="api add skill for profile" />
+    <MESSAGE value="api get all skill in profile" />
+    <option name="LAST_COMMIT_MESSAGE" value="api get all skill in profile" />
   </component>
 </project>

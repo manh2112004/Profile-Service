@@ -366,6 +366,30 @@ public class ProfileEventHandler {
 
     @EventHandler
     @Transactional
+    public void on(ProfileSkillUpdatedEvent event) {
+        Profile profile = profileRepository.findById(event.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        ProfileSkill skill = profile.getSkills().stream()
+                .filter(existingSkill -> existingSkill.getId().equals(event.getSkillId()))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Kỹ năng không tồn tại"));
+
+        if (event.getSkillName() != null) {
+            skill.setSkillName(event.getSkillName());
+        }
+        if (event.getLevel() != null) {
+            skill.setLevel(event.getLevel());
+        }
+        if (event.getYearsOfExperience() != null) {
+            skill.setYearsOfExperience(event.getYearsOfExperience());
+        }
+
+        profileRepository.save(profile);
+    }
+
+    @EventHandler
+    @Transactional
     public void on(ProfileEducationDeletedEvent event) {
         Profile profile = profileRepository.findById(event.getProfileId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));

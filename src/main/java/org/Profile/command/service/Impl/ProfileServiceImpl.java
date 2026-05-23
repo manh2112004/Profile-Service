@@ -9,6 +9,7 @@ import org.Profile.command.command.DeleteProfileExperienceCommand;
 import org.Profile.command.command.UpdateProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileExperienceCommand;
 import org.Profile.command.command.UpdateProfileCommand;
+import org.Profile.command.command.UpdateProfileSkillCommand;
 import org.Profile.command.data.Profile;
 import org.Profile.command.data.ProfileRepository;
 import org.Profile.command.model.request.CreateEducationRequest;
@@ -271,6 +272,43 @@ public class ProfileServiceImpl implements ProfileService {
                 .endDate(request.getEndDate())
                 .currentlyWorking(request.getCurrentlyWorking())
                 .description(request.getDescription())
+                .build();
+
+        return commandGateway.send(command);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CompletableFuture<String> updateSkill(
+            String userId,
+            String profileId,
+            String skillId,
+            CreateProfileSkillRequest request
+    ) {
+        if (userId == null || userId.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
+        }
+
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        if (!profile.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền cập nhật profile này");
+        }
+
+        boolean skillExists = profile.getSkills().stream()
+                .anyMatch(skill -> skill.getId().equals(skillId));
+
+        if (!skillExists) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Kỹ năng không tồn tại");
+        }
+
+        UpdateProfileSkillCommand command = UpdateProfileSkillCommand.builder()
+                .profileId(profile.getId())
+                .skillId(skillId)
+                .skillName(request.getSkillName())
+                .level(request.getLevel())
+                .yearsOfExperience(request.getYearsOfExperience())
                 .build();
 
         return commandGateway.send(command);
