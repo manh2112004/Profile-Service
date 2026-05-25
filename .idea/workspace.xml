@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3ed3a90c-3e0c-4d03-86e2-8762a49d2310" name="Changes" comment="api search in profile">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/Profile/command/data/Portfolio.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/command/data/Profile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/command/data/Profile.java" afterDir="false" />
+    <list default="true" id="3ed3a90c-3e0c-4d03-86e2-8762a49d2310" name="Changes" comment="update entity profile và thêm entity &#10;portfolio">
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/query/controller/ProfileQueryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/query/controller/ProfileQueryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/query/queries/ProfileQueryHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/query/queries/ProfileQueryHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -217,7 +217,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779675445457</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="update entity profile và thêm entity &#10;portfolio">
+      <option name="closed" value="true" />
+      <created>1779677600908</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1779677600908</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -241,6 +249,7 @@
     <MESSAGE value="api upload avatar" />
     <MESSAGE value="api delete avatar" />
     <MESSAGE value="api search in profile" />
-    <option name="LAST_COMMIT_MESSAGE" value="api search in profile" />
+    <MESSAGE value="update entity profile và thêm entity &#10;portfolio" />
+    <option name="LAST_COMMIT_MESSAGE" value="update entity profile và thêm entity &#10;portfolio" />
   </component>
 </project>

@@ -10,6 +10,7 @@ import org.Profile.constant.ProfileStatus;
 import org.Profile.query.model.response.EducationResponse;
 import org.Profile.query.model.response.ProfileResponse;
 import org.Profile.query.model.response.ProfileSkillResponse;
+import org.Profile.query.model.response.PublicProfileResponse;
 import org.Profile.query.model.response.SocialLinkResponse;
 import org.Profile.query.model.response.WorkExperienceResponse;
 import org.axonframework.queryhandling.QueryHandler;
@@ -55,6 +56,19 @@ public class ProfileQueryHandler {
                 ).stream()
                 .map(this::mapToResponse)
                 .toList();
+    }
+
+    @QueryHandler
+    @Transactional(readOnly = true)
+    public PublicProfileResponse handle(GetPublicProfileQuery query) {
+        Profile profile = profileRepository.findById(query.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        if (profile.getStatus() != ProfileStatus.ACTIVE) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại");
+        }
+
+        return mapToPublicResponse(profile);
     }
 
     @QueryHandler
@@ -144,6 +158,28 @@ public class ProfileQueryHandler {
                 .socialLinks(mapSocialLinks(profile))
                 .createdAt(profile.getCreatedAt())
                 .updatedAt(profile.getUpdatedAt())
+                .build();
+    }
+
+    private PublicProfileResponse mapToPublicResponse(Profile profile) {
+        return PublicProfileResponse.builder()
+                .id(profile.getId())
+                .fullName(profile.getFullName())
+                .avatarUrl(profile.getAvatarUrl())
+                .city(profile.getCity())
+                .country(profile.getCountry())
+                .headline(profile.getHeadline())
+                .summary(profile.getSummary())
+                .currentPosition(profile.getCurrentPosition())
+                .currentCompany(profile.getCurrentCompany())
+                .yearsOfExperience(profile.getYearsOfExperience())
+                .expectedJobTitle(profile.getExpectedJobTitle())
+                .expectedLocation(profile.getExpectedLocation())
+                .status(profile.getStatus())
+                .educations(mapEducations(profile))
+                .experiences(mapExperiences(profile))
+                .skills(mapSkills(profile))
+                .socialLinks(mapSocialLinks(profile))
                 .build();
     }
 

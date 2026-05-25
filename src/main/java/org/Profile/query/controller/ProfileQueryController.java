@@ -1,12 +1,14 @@
 package org.Profile.query.controller;
 
 import org.Profile.query.model.response.ProfileResponse;
+import org.Profile.query.model.response.PublicProfileResponse;
 import org.Profile.query.model.response.EducationResponse;
 import org.Profile.query.model.response.ProfileSkillResponse;
 import org.Profile.query.model.response.WorkExperienceResponse;
 import org.Profile.query.model.response.SocialLinkResponse;
 import org.Profile.query.queries.GetMyProfileQuery;
 import org.Profile.query.queries.GetProfileByIdQuery;
+import org.Profile.query.queries.GetPublicProfileQuery;
 import org.Profile.query.queries.GetProfileEducationDetailQuery;
 import org.Profile.query.queries.GetProfileEducationsQuery;
 import org.Profile.query.queries.GetProfileExperienceDetailQuery;
@@ -52,6 +54,14 @@ public class ProfileQueryController {
         return queryGateway.query(
                 new SearchProfilesQuery(normalize(keyword), normalize(city), normalize(country), normalize(skill)),
                 ResponseTypes.multipleInstancesOf(ProfileResponse.class)
+        );
+    }
+
+    @GetMapping("/public/{profileId}")
+    public CompletableFuture<PublicProfileResponse> getPublicProfile(@PathVariable String profileId) {
+        return queryGateway.query(
+                new GetPublicProfileQuery(profileId),
+                ResponseTypes.instanceOf(PublicProfileResponse.class)
         );
     }
 
