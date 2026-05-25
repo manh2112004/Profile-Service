@@ -1,6 +1,7 @@
 package org.Profile.query.queries;
 
 import org.Profile.command.data.Education;
+import org.Profile.command.data.Portfolio;
 import org.Profile.command.data.Profile;
 import org.Profile.command.data.ProfileRepository;
 import org.Profile.command.data.ProfileSkill;
@@ -8,6 +9,7 @@ import org.Profile.command.data.SocialLink;
 import org.Profile.command.data.WorkExperience;
 import org.Profile.constant.ProfileStatus;
 import org.Profile.query.model.response.EducationResponse;
+import org.Profile.query.model.response.PortfolioResponse;
 import org.Profile.query.model.response.ProfileResponse;
 import org.Profile.query.model.response.ProfileSkillResponse;
 import org.Profile.query.model.response.PublicProfileResponse;
@@ -34,6 +36,14 @@ public class ProfileQueryHandler {
         Profile profile = profileRepository.findByUserId(query.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
         return mapToResponse(profile);
+    }
+
+    @QueryHandler
+    @Transactional(readOnly = true)
+    public List<PortfolioResponse> handle(GetMyProfilePortfoliosQuery query) {
+        Profile profile = profileRepository.findByUserId(query.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+        return mapPortfolios(profile);
     }
 
     @QueryHandler
@@ -252,6 +262,36 @@ public class ProfileQueryHandler {
                 .id(link.getId())
                 .platform(link.getPlatform())
                 .url(link.getUrl())
+                .build();
+    }
+
+    private List<PortfolioResponse> mapPortfolios(Profile profile) {
+        return profile.getPortfolios().stream()
+                .sorted(Comparator
+                        .comparing(Portfolio::getDisplayOrder, Comparator.nullsLast(Integer::compareTo))
+                        .thenComparing(Portfolio::getUpdatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+                .map(this::mapPortfolio)
+                .toList();
+    }
+
+    private PortfolioResponse mapPortfolio(Portfolio portfolio) {
+        return PortfolioResponse.builder()
+                .id(portfolio.getId())
+                .title(portfolio.getTitle())
+                .description(portfolio.getDescription())
+                .imageUrl(portfolio.getImageUrl())
+                .projectUrl(portfolio.getProjectUrl())
+                .githubUrl(portfolio.getGithubUrl())
+                .role(portfolio.getRole())
+                .organization(portfolio.getOrganization())
+                .technologies(portfolio.getTechnologies())
+                .startDate(portfolio.getStartDate())
+                .endDate(portfolio.getEndDate())
+                .currentlyWorking(portfolio.getCurrentlyWorking())
+                .isPublic(portfolio.getIsPublic())
+                .displayOrder(portfolio.getDisplayOrder())
+                .createdAt(portfolio.getCreatedAt())
+                .updatedAt(portfolio.getUpdatedAt())
                 .build();
     }
 }

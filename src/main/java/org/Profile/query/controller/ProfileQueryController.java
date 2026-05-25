@@ -1,12 +1,14 @@
 package org.Profile.query.controller;
 
 import org.Profile.query.model.response.ProfileResponse;
+import org.Profile.query.model.response.PortfolioResponse;
 import org.Profile.query.model.response.PublicProfileResponse;
 import org.Profile.query.model.response.EducationResponse;
 import org.Profile.query.model.response.ProfileSkillResponse;
 import org.Profile.query.model.response.WorkExperienceResponse;
 import org.Profile.query.model.response.SocialLinkResponse;
 import org.Profile.query.queries.GetMyProfileQuery;
+import org.Profile.query.queries.GetMyProfilePortfoliosQuery;
 import org.Profile.query.queries.GetProfileByIdQuery;
 import org.Profile.query.queries.GetPublicProfileQuery;
 import org.Profile.query.queries.GetProfileEducationDetailQuery;
@@ -41,6 +43,14 @@ public class ProfileQueryController {
         return queryGateway.query(
                 new GetMyProfileQuery(jwt.getSubject()),
                 ResponseTypes.instanceOf(ProfileResponse.class)
+        );
+    }
+
+    @GetMapping("/me/portfolios")
+    public CompletableFuture<List<PortfolioResponse>> getMyProfilePortfolios(@AuthenticationPrincipal Jwt jwt) {
+        return queryGateway.query(
+                new GetMyProfilePortfoliosQuery(jwt.getSubject()),
+                ResponseTypes.multipleInstancesOf(PortfolioResponse.class)
         );
     }
 
