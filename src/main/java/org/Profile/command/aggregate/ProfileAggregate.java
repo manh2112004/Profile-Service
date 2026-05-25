@@ -5,6 +5,7 @@ import org.Profile.command.command.AddExperienceToProfileCommand;
 import org.Profile.command.command.AddSkillToProfileCommand;
 import org.Profile.command.command.AddSocialLinkToProfileCommand;
 import org.Profile.command.command.CreateProfileCommand;
+import org.Profile.command.command.DeleteProfileAvatarCommand;
 import org.Profile.command.command.DeleteProfileExperienceCommand;
 import org.Profile.command.command.DeleteProfileEducationCommand;
 import org.Profile.command.command.DeleteProfileSkillCommand;
@@ -17,6 +18,7 @@ import org.Profile.command.command.UpdateProfileSkillCommand;
 import org.Profile.command.command.UpdateProfileSocialLinkCommand;
 import org.Profile.command.event.EducationAddedToProfileEvent;
 import org.Profile.command.event.ExperienceAddedToProfileEvent;
+import org.Profile.command.event.ProfileAvatarDeletedEvent;
 import org.Profile.command.event.ProfileAvatarUpdatedEvent;
 import org.Profile.command.event.ProfileCreatedEvent;
 import org.Profile.command.event.ProfileEducationDeletedEvent;
@@ -110,6 +112,12 @@ public class ProfileAggregate {
                 .avatarUrl(command.getAvatarUrl())
                 .build());
         return "Cập nhật ảnh đại diện thành công";
+    }
+
+    @CommandHandler
+    public String handle(DeleteProfileAvatarCommand command) {
+        AggregateLifecycle.apply(new ProfileAvatarDeletedEvent(command.getProfileId()));
+        return "Xóa ảnh đại diện thành công";
     }
 
     @CommandHandler
@@ -271,6 +279,11 @@ public class ProfileAggregate {
 
     @EventSourcingHandler
     public void on(ProfileAvatarUpdatedEvent event) {
+        this.id = event.getProfileId();
+    }
+
+    @EventSourcingHandler
+    public void on(ProfileAvatarDeletedEvent event) {
         this.id = event.getProfileId();
     }
 

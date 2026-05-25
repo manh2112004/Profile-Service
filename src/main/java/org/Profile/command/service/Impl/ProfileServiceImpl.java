@@ -7,6 +7,7 @@ import org.Profile.command.command.AddExperienceToProfileCommand;
 import org.Profile.command.command.AddSkillToProfileCommand;
 import org.Profile.command.command.AddSocialLinkToProfileCommand;
 import org.Profile.command.command.CreateProfileCommand;
+import org.Profile.command.command.DeleteProfileAvatarCommand;
 import org.Profile.command.command.DeleteProfileEducationCommand;
 import org.Profile.command.command.DeleteProfileExperienceCommand;
 import org.Profile.command.command.DeleteProfileSkillCommand;
@@ -36,6 +37,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
@@ -161,6 +163,24 @@ public class ProfileServiceImpl implements ProfileService {
                 .build();
 
         return commandGateway.send(command);
+    }
+
+    @Override
+    public CompletableFuture<String> deleteAvatar(String userId, String profileId) {
+        if (userId == null || userId.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
+        }
+
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        if (!profile.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền cập nhật profile này");
+        }
+
+        deleteImageIfPossible(profile.getAvatarUrl());
+
+        return commandGateway.send(new DeleteProfileAvatarCommand(profile.getId()));
     }
 
     @Override
@@ -528,6 +548,44 @@ public class ProfileServiceImpl implements ProfileService {
             return secureUrl.toString();
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Upload avatar thất bại", e);
+        }
+    }
+
+    private void deleteImageIfPossible(String imageUrl) {
+        String publicId = extractCloudinaryPublicId(imageUrl);
+        if (publicId == null) {
+            return;
+        }
+
+        try {
+            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Xóa avatar trên Cloudinary thất bại", e);
+        }
+    }
+
+    private String extractCloudinaryPublicId(String imageUrl) {
+        if (imageUrl == null || imageUrl.isBlank()) {
+            return null;
+        }
+
+        try {
+            String path = URI.create(imageUrl).getPath();
+            String marker = "/upload/";
+            int uploadIndex = path.indexOf(marker);
+            if (uploadIndex < 0) {
+                return null;
+            }
+
+            String publicPath = path.substring(uploadIndex + marker.length());
+            publicPath = publicPath.replaceFirst("^v\\d+/", "");
+            int extensionIndex = publicPath.lastIndexOf('.');
+            if (extensionIndex > 0) {
+                publicPath = publicPath.substring(0, extensionIndex);
+            }
+            return publicPath.isBlank() ? null : publicPath;
+        } catch (IllegalArgumentException e) {
+            return null;
         }
     }
 }

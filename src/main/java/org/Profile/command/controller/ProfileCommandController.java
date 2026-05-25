@@ -55,6 +55,14 @@ public class ProfileCommandController {
         return profileService.updateAvatar(jwt.getSubject(), profileId, file);
     }
 
+    @DeleteMapping("/{profileId}/avatar")
+    public CompletableFuture<String> deleteAvatar(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String profileId
+    ) {
+        return profileService.deleteAvatar(jwt.getSubject(), profileId);
+    }
+
     @PostMapping("/{profileId}/educations")
     public CompletableFuture<String> addEducation(
             @AuthenticationPrincipal Jwt jwt,

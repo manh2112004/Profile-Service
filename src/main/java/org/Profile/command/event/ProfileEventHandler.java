@@ -246,6 +246,16 @@ public class ProfileEventHandler {
 
     @EventHandler
     @Transactional
+    public void on(ProfileAvatarDeletedEvent event) {
+        Profile profile = profileRepository.findById(event.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        profile.setAvatarUrl(null);
+        profileRepository.save(profile);
+    }
+
+    @EventHandler
+    @Transactional
     public void on(EducationAddedToProfileEvent event) {
         Profile profile = profileRepository.findById(event.getProfileId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
