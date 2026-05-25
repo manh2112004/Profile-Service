@@ -19,6 +19,7 @@ public class PublicProfileResponse {
     private String id;
     private String fullName;
     private String avatarUrl;
+    private String coverImageUrl;
     private String city;
     private String country;
     private String headline;

@@ -16,6 +16,7 @@ import org.Profile.command.command.UpdateProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileExperienceCommand;
 import org.Profile.command.command.UpdateProfileCommand;
 import org.Profile.command.command.UpdateProfileAvatarCommand;
+import org.Profile.command.command.UpdateProfileCoverImageCommand;
 import org.Profile.command.command.UpdateProfileSkillCommand;
 import org.Profile.command.command.UpdateProfileSocialLinkCommand;
 import org.Profile.command.data.Profile;
@@ -155,11 +156,39 @@ public class ProfileServiceImpl implements ProfileService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền cập nhật profile này");
         }
 
-        String avatarUrl = uploadImage(file);
+        String avatarUrl = uploadImage(file, "profile-service/avatars", "Upload avatar thất bại");
 
         UpdateProfileAvatarCommand command = UpdateProfileAvatarCommand.builder()
                 .profileId(profile.getId())
                 .avatarUrl(avatarUrl)
+                .build();
+
+        return commandGateway.send(command);
+    }
+
+    @Override
+    public CompletableFuture<String> updateMyCoverImage(String userId, MultipartFile file) {
+        if (userId == null || userId.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
+        }
+
+        if (file == null || file.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Vui lòng chọn ảnh bìa");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File upload phải là hình ảnh");
+        }
+
+        Profile profile = profileRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        String coverImageUrl = uploadImage(file, "profile-service/cover-images", "Upload ảnh bìa thất bại");
+
+        UpdateProfileCoverImageCommand command = UpdateProfileCoverImageCommand.builder()
+                .profileId(profile.getId())
+                .coverImageUrl(coverImageUrl)
                 .build();
 
         return commandGateway.send(command);
@@ -535,10 +564,10 @@ public class ProfileServiceImpl implements ProfileService {
         return commandGateway.send(new DeleteProfileSocialLinkCommand(profile.getId(), socialLinkId));
     }
 
-    private String uploadImage(MultipartFile file) {
+    private String uploadImage(MultipartFile file, String folder, String errorMessage) {
         try {
             Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
-                    "folder", "profile-service/avatars",
+                    "folder", folder,
                     "resource_type", "image"
             ));
             Object secureUrl = result.get("secure_url");
@@ -547,7 +576,7 @@ public class ProfileServiceImpl implements ProfileService {
             }
             return secureUrl.toString();
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Upload avatar thất bại", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage, e);
         }
     }
 

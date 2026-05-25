@@ -256,6 +256,16 @@ public class ProfileEventHandler {
 
     @EventHandler
     @Transactional
+    public void on(ProfileCoverImageUpdatedEvent event) {
+        Profile profile = profileRepository.findById(event.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        profile.setCoverImageUrl(event.getCoverImageUrl());
+        profileRepository.save(profile);
+    }
+
+    @EventHandler
+    @Transactional
     public void on(EducationAddedToProfileEvent event) {
         Profile profile = profileRepository.findById(event.getProfileId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));

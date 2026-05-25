@@ -17,6 +17,8 @@ public interface ProfileService {
 
     CompletableFuture<String> updateAvatar(String userId, String profileId, MultipartFile file);
 
+    CompletableFuture<String> updateMyCoverImage(String userId, MultipartFile file);
+
     CompletableFuture<String> deleteAvatar(String userId, String profileId);
 
     CompletableFuture<String> addEducation(String userId, String profileId, CreateEducationRequest request);

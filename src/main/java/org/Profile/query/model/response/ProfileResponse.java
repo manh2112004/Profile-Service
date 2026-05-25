@@ -23,6 +23,7 @@ public class ProfileResponse {
     private String userId;
     private String fullName;
     private String avatarUrl;
+    private String coverImageUrl;
     private String phoneNumber;
     private LocalDate dateOfBirth;
     private Gender gender;

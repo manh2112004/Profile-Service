@@ -55,6 +55,14 @@ public class ProfileCommandController {
         return profileService.updateAvatar(jwt.getSubject(), profileId, file);
     }
 
+    @PostMapping(value = "/me/cover-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CompletableFuture<String> updateMyCoverImage(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam("file") MultipartFile file
+    ) {
+        return profileService.updateMyCoverImage(jwt.getSubject(), file);
+    }
+
     @DeleteMapping("/{profileId}/avatar")
     public CompletableFuture<String> deleteAvatar(
             @AuthenticationPrincipal Jwt jwt,
