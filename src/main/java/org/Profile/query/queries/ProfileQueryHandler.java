@@ -9,6 +9,8 @@ import org.Profile.command.data.SocialLink;
 import org.Profile.command.data.WorkExperience;
 import org.Profile.constant.ProfileStatus;
 import org.Profile.query.model.response.EducationResponse;
+import org.Profile.query.model.response.ProfileCompletionResponse;
+import org.Profile.query.model.response.ProfileCompletionSectionResponse;
 import org.Profile.query.model.response.PortfolioResponse;
 import org.Profile.query.model.response.ProfileResponse;
 import org.Profile.query.model.response.ProfileSkillResponse;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -44,6 +47,14 @@ public class ProfileQueryHandler {
         Profile profile = profileRepository.findByUserId(query.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
         return mapPortfolios(profile);
+    }
+
+    @QueryHandler
+    @Transactional(readOnly = true)
+    public ProfileCompletionResponse handle(GetMyProfileCompletionQuery query) {
+        Profile profile = profileRepository.findByUserId(query.getUserId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+        return calculateCompletion(profile);
     }
 
     @QueryHandler
@@ -293,5 +304,99 @@ public class ProfileQueryHandler {
                 .createdAt(portfolio.getCreatedAt())
                 .updatedAt(portfolio.getUpdatedAt())
                 .build();
+    }
+
+    private ProfileCompletionResponse calculateCompletion(Profile profile) {
+        List<ProfileCompletionSectionResponse> sections = List.of(
+                buildSection("basic", List.of(
+                        field("fullName", hasText(profile.getFullName())),
+                        field("phoneNumber", hasText(profile.getPhoneNumber())),
+                        field("dateOfBirth", profile.getDateOfBirth() != null),
+                        field("gender", profile.getGender() != null)
+                )),
+                buildSection("location", List.of(
+                        field("address", hasText(profile.getAddress())),
+                        field("city", hasText(profile.getCity())),
+                        field("country", hasText(profile.getCountry()))
+                )),
+                buildSection("media", List.of(
+                        field("avatarUrl", hasText(profile.getAvatarUrl())),
+                        field("coverImageUrl", hasText(profile.getCoverImageUrl()))
+                )),
+                buildSection("career", List.of(
+                        field("headline", hasText(profile.getHeadline())),
+                        field("summary", hasText(profile.getSummary())),
+                        field("currentPosition", hasText(profile.getCurrentPosition())),
+                        field("currentCompany", hasText(profile.getCurrentCompany())),
+                        field("yearsOfExperience", profile.getYearsOfExperience() != null)
+                )),
+                buildSection("expectation", List.of(
+                        field("expectedJobTitle", hasText(profile.getExpectedJobTitle())),
+                        field("expectedLocation", hasText(profile.getExpectedLocation())),
+                        field("expectedSalary", profile.getExpectedSalary() != null)
+                )),
+                buildSection("profileDetails", List.of(
+                        field("educations", !profile.getEducations().isEmpty()),
+                        field("experiences", !profile.getExperiences().isEmpty()),
+                        field("skills", !profile.getSkills().isEmpty()),
+                        field("socialLinks", !profile.getSocialLinks().isEmpty()),
+                        field("portfolios", !profile.getPortfolios().isEmpty())
+                ))
+        );
+
+        int totalItems = sections.stream()
+                .mapToInt(ProfileCompletionSectionResponse::getTotalItems)
+                .sum();
+        int completedItems = sections.stream()
+                .mapToInt(ProfileCompletionSectionResponse::getCompletedItems)
+                .sum();
+        List<String> missingFields = sections.stream()
+                .flatMap(section -> section.getMissingFields().stream())
+                .toList();
+
+        return ProfileCompletionResponse.builder()
+                .completionPercentage(calculatePercentage(completedItems, totalItems))
+                .completedItems(completedItems)
+                .totalItems(totalItems)
+                .missingFields(missingFields)
+                .sections(sections)
+                .build();
+    }
+
+    private ProfileCompletionSectionResponse buildSection(String section, List<CompletionField> fields) {
+        int totalItems = fields.size();
+        int completedItems = (int) fields.stream()
+                .filter(CompletionField::completed)
+                .count();
+        List<String> missingFields = fields.stream()
+                .filter(field -> !field.completed())
+                .map(CompletionField::name)
+                .toList();
+
+        return ProfileCompletionSectionResponse.builder()
+                .section(section)
+                .completionPercentage(calculatePercentage(completedItems, totalItems))
+                .completedItems(completedItems)
+                .totalItems(totalItems)
+                .missingFields(new ArrayList<>(missingFields))
+                .build();
+    }
+
+    private CompletionField field(String name, boolean completed) {
+        return new CompletionField(name, completed);
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
+    }
+
+    private int calculatePercentage(int completedItems, int totalItems) {
+        if (totalItems == 0) {
+            return 0;
+        }
+        return (int) Math.round((completedItems * 100.0) / totalItems);
+    }
+
+    private record CompletionField(String name, boolean completed) {
     }
 }
