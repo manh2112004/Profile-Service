@@ -30,6 +30,8 @@ public class Profile {
 
     private String avatarUrl;
 
+    private String coverImageUrl;
+
     private String phoneNumber;
 
     private LocalDate dateOfBirth;
@@ -78,6 +80,10 @@ public class Profile {
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<SocialLink> socialLinks = new HashSet<>();
+
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<Portfolio> portfolios = new HashSet<>();
 
     @CreationTimestamp
     private LocalDateTime createdAt;
