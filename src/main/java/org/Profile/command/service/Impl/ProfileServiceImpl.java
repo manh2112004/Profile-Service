@@ -4,6 +4,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import org.Profile.command.command.AddEducationToProfileCommand;
 import org.Profile.command.command.AddExperienceToProfileCommand;
+import org.Profile.command.command.AddPortfolioToProfileCommand;
 import org.Profile.command.command.AddSkillToProfileCommand;
 import org.Profile.command.command.AddSocialLinkToProfileCommand;
 import org.Profile.command.command.CreateProfileCommand;
@@ -23,6 +24,7 @@ import org.Profile.command.command.UpdateProfileSocialLinkCommand;
 import org.Profile.command.data.Profile;
 import org.Profile.command.data.ProfileRepository;
 import org.Profile.command.model.request.CreateEducationRequest;
+import org.Profile.command.model.request.CreatePortfolioRequest;
 import org.Profile.command.model.request.CreateProfileRequest;
 import org.Profile.command.model.request.CreateProfileSkillRequest;
 import org.Profile.command.model.request.CreateSocialLinkRequest;
@@ -324,6 +326,40 @@ public class ProfileServiceImpl implements ProfileService {
                 .socialLinkId(UUID.randomUUID().toString())
                 .platform(request.getPlatform())
                 .url(request.getUrl())
+                .build();
+
+        return commandGateway.send(command);
+    }
+
+    @Override
+    public CompletableFuture<String> addPortfolio(String userId, CreatePortfolioRequest request) {
+        if (userId == null || userId.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
+        }
+
+        if (request.getTitle() == null || request.getTitle().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "title không được để trống");
+        }
+
+        Profile profile = profileRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        AddPortfolioToProfileCommand command = AddPortfolioToProfileCommand.builder()
+                .profileId(profile.getId())
+                .portfolioId(UUID.randomUUID().toString())
+                .title(request.getTitle().trim())
+                .description(request.getDescription())
+                .imageUrl(request.getImageUrl())
+                .projectUrl(request.getProjectUrl())
+                .githubUrl(request.getGithubUrl())
+                .role(request.getRole())
+                .organization(request.getOrganization())
+                .technologies(request.getTechnologies())
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .currentlyWorking(request.getCurrentlyWorking())
+                .isPublic(request.getIsPublic())
+                .displayOrder(request.getDisplayOrder())
                 .build();
 
         return commandGateway.send(command);

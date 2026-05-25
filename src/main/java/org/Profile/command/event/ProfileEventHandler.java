@@ -1,6 +1,7 @@
 package org.Profile.command.event;
 
 import org.Profile.command.data.Education;
+import org.Profile.command.data.Portfolio;
 import org.Profile.command.data.Profile;
 import org.Profile.command.data.ProfileRepository;
 import org.Profile.command.data.ProfileSkill;
@@ -349,6 +350,34 @@ public class ProfileEventHandler {
                 .build();
 
         profile.getSocialLinks().add(socialLink);
+        profileRepository.save(profile);
+    }
+
+    @EventHandler
+    @Transactional
+    public void on(PortfolioAddedToProfileEvent event) {
+        Profile profile = profileRepository.findById(event.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        Portfolio portfolio = Portfolio.builder()
+                .id(event.getPortfolioId())
+                .title(event.getTitle())
+                .description(event.getDescription())
+                .imageUrl(event.getImageUrl())
+                .projectUrl(event.getProjectUrl())
+                .githubUrl(event.getGithubUrl())
+                .role(event.getRole())
+                .organization(event.getOrganization())
+                .technologies(event.getTechnologies())
+                .startDate(event.getStartDate())
+                .endDate(event.getEndDate())
+                .currentlyWorking(event.getCurrentlyWorking())
+                .isPublic(event.getIsPublic())
+                .displayOrder(event.getDisplayOrder())
+                .profile(profile)
+                .build();
+
+        profile.getPortfolios().add(portfolio);
         profileRepository.save(profile);
     }
 

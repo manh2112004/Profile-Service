@@ -2,6 +2,7 @@ package org.Profile.command.controller;
 
 import jakarta.validation.Valid;
 import org.Profile.command.model.request.CreateEducationRequest;
+import org.Profile.command.model.request.CreatePortfolioRequest;
 import org.Profile.command.model.request.CreateProfileRequest;
 import org.Profile.command.model.request.CreateProfileSkillRequest;
 import org.Profile.command.model.request.CreateSocialLinkRequest;
@@ -110,6 +111,14 @@ public class ProfileCommandController {
             @RequestBody CreateSocialLinkRequest request
     ) {
         return profileService.addSocialLink(jwt.getSubject(), profileId, request);
+    }
+
+    @PostMapping("/me/portfolios")
+    public CompletableFuture<String> addPortfolio(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestBody CreatePortfolioRequest request
+    ) {
+        return profileService.addPortfolio(jwt.getSubject(), request);
     }
 
     @PutMapping("/{profileId}/educations/{educationId}")

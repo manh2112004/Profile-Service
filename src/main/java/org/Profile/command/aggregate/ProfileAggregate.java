@@ -2,6 +2,7 @@ package org.Profile.command.aggregate;
 
 import org.Profile.command.command.AddEducationToProfileCommand;
 import org.Profile.command.command.AddExperienceToProfileCommand;
+import org.Profile.command.command.AddPortfolioToProfileCommand;
 import org.Profile.command.command.AddSkillToProfileCommand;
 import org.Profile.command.command.AddSocialLinkToProfileCommand;
 import org.Profile.command.command.CreateProfileCommand;
@@ -29,6 +30,7 @@ import org.Profile.command.event.ProfileEducationDeletedEvent;
 import org.Profile.command.event.ProfileEducationUpdatedEvent;
 import org.Profile.command.event.ProfileExperienceDeletedEvent;
 import org.Profile.command.event.ProfileExperienceUpdatedEvent;
+import org.Profile.command.event.PortfolioAddedToProfileEvent;
 import org.Profile.command.event.ProfileSkillDeletedEvent;
 import org.Profile.command.event.ProfileSkillUpdatedEvent;
 import org.Profile.command.event.ProfileSocialLinkDeletedEvent;
@@ -194,6 +196,28 @@ public class ProfileAggregate {
     }
 
     @CommandHandler
+    public String handle(AddPortfolioToProfileCommand command) {
+        AggregateLifecycle.apply(PortfolioAddedToProfileEvent.builder()
+                .profileId(command.getProfileId())
+                .portfolioId(command.getPortfolioId())
+                .title(command.getTitle())
+                .description(command.getDescription())
+                .imageUrl(command.getImageUrl())
+                .projectUrl(command.getProjectUrl())
+                .githubUrl(command.getGithubUrl())
+                .role(command.getRole())
+                .organization(command.getOrganization())
+                .technologies(command.getTechnologies())
+                .startDate(command.getStartDate())
+                .endDate(command.getEndDate())
+                .currentlyWorking(command.getCurrentlyWorking())
+                .isPublic(command.getIsPublic())
+                .displayOrder(command.getDisplayOrder())
+                .build());
+        return "Thêm portfolio thành công";
+    }
+
+    @CommandHandler
     public String handle(UpdateProfileEducationCommand command) {
         AggregateLifecycle.apply(ProfileEducationUpdatedEvent.builder()
                 .profileId(command.getProfileId())
@@ -333,6 +357,11 @@ public class ProfileAggregate {
 
     @EventSourcingHandler
     public void on(SocialLinkAddedToProfileEvent event) {
+        this.id = event.getProfileId();
+    }
+
+    @EventSourcingHandler
+    public void on(PortfolioAddedToProfileEvent event) {
         this.id = event.getProfileId();
     }
 

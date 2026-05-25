@@ -2,6 +2,7 @@ package org.Profile.command.service;
 
 import org.Profile.command.model.request.CreateProfileRequest;
 import org.Profile.command.model.request.CreateEducationRequest;
+import org.Profile.command.model.request.CreatePortfolioRequest;
 import org.Profile.command.model.request.CreateProfileSkillRequest;
 import org.Profile.command.model.request.CreateSocialLinkRequest;
 import org.Profile.command.model.request.UpdateProfileRequest;
@@ -30,6 +31,8 @@ public interface ProfileService {
     CompletableFuture<String> addSkill(String userId, String profileId, CreateProfileSkillRequest request);
 
     CompletableFuture<String> addSocialLink(String userId, String profileId, CreateSocialLinkRequest request);
+
+    CompletableFuture<String> addPortfolio(String userId, CreatePortfolioRequest request);
 
     CompletableFuture<String> updateEducation(
             String userId,
