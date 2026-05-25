@@ -63,6 +63,11 @@ public class ProfileCommandController {
         return profileService.updateMyCoverImage(jwt.getSubject(), file);
     }
 
+    @DeleteMapping("/me/cover-image")
+    public CompletableFuture<String> deleteMyCoverImage(@AuthenticationPrincipal Jwt jwt) {
+        return profileService.deleteMyCoverImage(jwt.getSubject());
+    }
+
     @DeleteMapping("/{profileId}/avatar")
     public CompletableFuture<String> deleteAvatar(
             @AuthenticationPrincipal Jwt jwt,

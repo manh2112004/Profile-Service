@@ -8,6 +8,7 @@ import org.Profile.command.command.AddSkillToProfileCommand;
 import org.Profile.command.command.AddSocialLinkToProfileCommand;
 import org.Profile.command.command.CreateProfileCommand;
 import org.Profile.command.command.DeleteProfileAvatarCommand;
+import org.Profile.command.command.DeleteProfileCoverImageCommand;
 import org.Profile.command.command.DeleteProfileEducationCommand;
 import org.Profile.command.command.DeleteProfileExperienceCommand;
 import org.Profile.command.command.DeleteProfileSkillCommand;
@@ -195,6 +196,20 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    public CompletableFuture<String> deleteMyCoverImage(String userId) {
+        if (userId == null || userId.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
+        }
+
+        Profile profile = profileRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        deleteImageIfPossible(profile.getCoverImageUrl(), "Xóa ảnh bìa trên Cloudinary thất bại");
+
+        return commandGateway.send(new DeleteProfileCoverImageCommand(profile.getId()));
+    }
+
+    @Override
     public CompletableFuture<String> deleteAvatar(String userId, String profileId) {
         if (userId == null || userId.isBlank()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
@@ -207,7 +222,7 @@ public class ProfileServiceImpl implements ProfileService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền cập nhật profile này");
         }
 
-        deleteImageIfPossible(profile.getAvatarUrl());
+        deleteImageIfPossible(profile.getAvatarUrl(), "Xóa avatar trên Cloudinary thất bại");
 
         return commandGateway.send(new DeleteProfileAvatarCommand(profile.getId()));
     }
@@ -580,7 +595,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
-    private void deleteImageIfPossible(String imageUrl) {
+    private void deleteImageIfPossible(String imageUrl, String errorMessage) {
         String publicId = extractCloudinaryPublicId(imageUrl);
         if (publicId == null) {
             return;
@@ -589,7 +604,7 @@ public class ProfileServiceImpl implements ProfileService {
         try {
             cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Xóa avatar trên Cloudinary thất bại", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage, e);
         }
     }
 

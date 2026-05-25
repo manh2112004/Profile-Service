@@ -6,6 +6,7 @@ import org.Profile.command.command.AddSkillToProfileCommand;
 import org.Profile.command.command.AddSocialLinkToProfileCommand;
 import org.Profile.command.command.CreateProfileCommand;
 import org.Profile.command.command.DeleteProfileAvatarCommand;
+import org.Profile.command.command.DeleteProfileCoverImageCommand;
 import org.Profile.command.command.DeleteProfileExperienceCommand;
 import org.Profile.command.command.DeleteProfileEducationCommand;
 import org.Profile.command.command.DeleteProfileSkillCommand;
@@ -21,6 +22,7 @@ import org.Profile.command.event.EducationAddedToProfileEvent;
 import org.Profile.command.event.ExperienceAddedToProfileEvent;
 import org.Profile.command.event.ProfileAvatarDeletedEvent;
 import org.Profile.command.event.ProfileAvatarUpdatedEvent;
+import org.Profile.command.event.ProfileCoverImageDeletedEvent;
 import org.Profile.command.event.ProfileCoverImageUpdatedEvent;
 import org.Profile.command.event.ProfileCreatedEvent;
 import org.Profile.command.event.ProfileEducationDeletedEvent;
@@ -129,6 +131,12 @@ public class ProfileAggregate {
                 .coverImageUrl(command.getCoverImageUrl())
                 .build());
         return "Cập nhật ảnh bìa thành công";
+    }
+
+    @CommandHandler
+    public String handle(DeleteProfileCoverImageCommand command) {
+        AggregateLifecycle.apply(new ProfileCoverImageDeletedEvent(command.getProfileId()));
+        return "Xóa ảnh bìa thành công";
     }
 
     @CommandHandler
@@ -300,6 +308,11 @@ public class ProfileAggregate {
 
     @EventSourcingHandler
     public void on(ProfileCoverImageUpdatedEvent event) {
+        this.id = event.getProfileId();
+    }
+
+    @EventSourcingHandler
+    public void on(ProfileCoverImageDeletedEvent event) {
         this.id = event.getProfileId();
     }
 
