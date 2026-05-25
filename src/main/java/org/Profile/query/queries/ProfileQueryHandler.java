@@ -6,6 +6,7 @@ import org.Profile.command.data.ProfileRepository;
 import org.Profile.command.data.ProfileSkill;
 import org.Profile.command.data.SocialLink;
 import org.Profile.command.data.WorkExperience;
+import org.Profile.constant.ProfileStatus;
 import org.Profile.query.model.response.EducationResponse;
 import org.Profile.query.model.response.ProfileResponse;
 import org.Profile.query.model.response.ProfileSkillResponse;
@@ -40,6 +41,20 @@ public class ProfileQueryHandler {
         Profile profile = profileRepository.findById(query.getProfileId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
         return mapToResponse(profile);
+    }
+
+    @QueryHandler
+    @Transactional(readOnly = true)
+    public List<ProfileResponse> handle(SearchProfilesQuery query) {
+        return profileRepository.searchProfiles(
+                        query.getKeyword(),
+                        query.getCity(),
+                        query.getCountry(),
+                        query.getSkill(),
+                        ProfileStatus.ACTIVE
+                ).stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     @QueryHandler

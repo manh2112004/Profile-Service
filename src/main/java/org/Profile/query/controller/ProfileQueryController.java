@@ -13,6 +13,7 @@ import org.Profile.query.queries.GetProfileExperienceDetailQuery;
 import org.Profile.query.queries.GetProfileExperiencesQuery;
 import org.Profile.query.queries.GetProfileSkillsQuery;
 import org.Profile.query.queries.GetProfileSocialLinksQuery;
+import org.Profile.query.queries.SearchProfilesQuery;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.CompletableFuture;
@@ -37,6 +39,19 @@ public class ProfileQueryController {
         return queryGateway.query(
                 new GetMyProfileQuery(jwt.getSubject()),
                 ResponseTypes.instanceOf(ProfileResponse.class)
+        );
+    }
+
+    @GetMapping("/search")
+    public CompletableFuture<List<ProfileResponse>> searchProfiles(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String country,
+            @RequestParam(required = false) String skill
+    ) {
+        return queryGateway.query(
+                new SearchProfilesQuery(normalize(keyword), normalize(city), normalize(country), normalize(skill)),
+                ResponseTypes.multipleInstancesOf(ProfileResponse.class)
         );
     }
 
@@ -100,5 +115,9 @@ public class ProfileQueryController {
                 new GetProfileEducationDetailQuery(profileId, educationId),
                 ResponseTypes.instanceOf(EducationResponse.class)
         );
+    }
+
+    private String normalize(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
     }
 }
