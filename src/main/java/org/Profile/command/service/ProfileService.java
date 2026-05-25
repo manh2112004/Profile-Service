@@ -34,6 +34,8 @@ public interface ProfileService {
 
     CompletableFuture<String> addPortfolio(String userId, CreatePortfolioRequest request);
 
+    CompletableFuture<String> addPortfolio(String userId, CreatePortfolioRequest request, MultipartFile image);
+
     CompletableFuture<String> updateEducation(
             String userId,
             String profileId,
@@ -71,4 +73,6 @@ public interface ProfileService {
     CompletableFuture<String> deleteSkill(String userId, String profileId, String skillId);
 
     CompletableFuture<String> deleteSocialLink(String userId, String profileId, String socialLinkId);
+
+    CompletableFuture<String> deletePortfolio(String userId, String portfolioId);
 }

@@ -10,6 +10,7 @@ import org.Profile.command.command.DeleteProfileAvatarCommand;
 import org.Profile.command.command.DeleteProfileCoverImageCommand;
 import org.Profile.command.command.DeleteProfileExperienceCommand;
 import org.Profile.command.command.DeleteProfileEducationCommand;
+import org.Profile.command.command.DeleteProfilePortfolioCommand;
 import org.Profile.command.command.DeleteProfileSkillCommand;
 import org.Profile.command.command.DeleteProfileSocialLinkCommand;
 import org.Profile.command.command.UpdateProfileEducationCommand;
@@ -32,6 +33,7 @@ import org.Profile.command.event.ProfileEducationUpdatedEvent;
 import org.Profile.command.event.ProfileExperienceDeletedEvent;
 import org.Profile.command.event.ProfileExperienceUpdatedEvent;
 import org.Profile.command.event.PortfolioAddedToProfileEvent;
+import org.Profile.command.event.ProfilePortfolioDeletedEvent;
 import org.Profile.command.event.ProfilePortfolioUpdatedEvent;
 import org.Profile.command.event.ProfileSkillDeletedEvent;
 import org.Profile.command.event.ProfileSkillUpdatedEvent;
@@ -331,6 +333,15 @@ public class ProfileAggregate {
         return "Xóa liên kết mạng xã hội thành công";
     }
 
+    @CommandHandler
+    public String handle(DeleteProfilePortfolioCommand command) {
+        AggregateLifecycle.apply(new ProfilePortfolioDeletedEvent(
+                command.getProfileId(),
+                command.getPortfolioId()
+        ));
+        return "Xóa portfolio thành công";
+    }
+
     @EventSourcingHandler
     public void on(ProfileCreatedEvent event) {
         this.id = event.getId();
@@ -421,6 +432,11 @@ public class ProfileAggregate {
 
     @EventSourcingHandler
     public void on(ProfileSocialLinkDeletedEvent event) {
+        this.id = event.getProfileId();
+    }
+
+    @EventSourcingHandler
+    public void on(ProfilePortfolioDeletedEvent event) {
         this.id = event.getProfileId();
     }
 

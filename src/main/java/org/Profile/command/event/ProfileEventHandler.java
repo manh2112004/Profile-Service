@@ -612,4 +612,20 @@ public class ProfileEventHandler {
 
         profileRepository.save(profile);
     }
+
+    @EventHandler
+    @Transactional
+    public void on(ProfilePortfolioDeletedEvent event) {
+        Profile profile = profileRepository.findById(event.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        boolean removed = profile.getPortfolios()
+                .removeIf(portfolio -> portfolio.getId().equals(event.getPortfolioId()));
+
+        if (!removed) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Portfolio không tồn tại");
+        }
+
+        profileRepository.save(profile);
+    }
 }

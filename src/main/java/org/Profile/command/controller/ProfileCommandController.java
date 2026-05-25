@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -113,12 +114,21 @@ public class ProfileCommandController {
         return profileService.addSocialLink(jwt.getSubject(), profileId, request);
     }
 
-    @PostMapping("/me/portfolios")
+    @PostMapping(value = "/me/portfolios", consumes = MediaType.APPLICATION_JSON_VALUE)
     public CompletableFuture<String> addPortfolio(
             @AuthenticationPrincipal Jwt jwt,
             @RequestBody CreatePortfolioRequest request
     ) {
         return profileService.addPortfolio(jwt.getSubject(), request);
+    }
+
+    @PostMapping(value = "/me/portfolios", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CompletableFuture<String> addPortfolioWithImage(
+            @AuthenticationPrincipal Jwt jwt,
+            @ModelAttribute CreatePortfolioRequest request,
+            @RequestParam(value = "image", required = false) MultipartFile image
+    ) {
+        return profileService.addPortfolio(jwt.getSubject(), request, image);
     }
 
     @PutMapping("/{profileId}/educations/{educationId}")
@@ -204,5 +214,13 @@ public class ProfileCommandController {
             @PathVariable String socialLinkId
     ) {
         return profileService.deleteSocialLink(jwt.getSubject(), profileId, socialLinkId);
+    }
+
+    @DeleteMapping("/me/portfolios/{id}")
+    public CompletableFuture<String> deletePortfolio(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String id
+    ) {
+        return profileService.deletePortfolio(jwt.getSubject(), id);
     }
 }

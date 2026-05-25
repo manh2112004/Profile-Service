@@ -12,6 +12,7 @@ import org.Profile.command.command.DeleteProfileAvatarCommand;
 import org.Profile.command.command.DeleteProfileCoverImageCommand;
 import org.Profile.command.command.DeleteProfileEducationCommand;
 import org.Profile.command.command.DeleteProfileExperienceCommand;
+import org.Profile.command.command.DeleteProfilePortfolioCommand;
 import org.Profile.command.command.DeleteProfileSkillCommand;
 import org.Profile.command.command.DeleteProfileSocialLinkCommand;
 import org.Profile.command.command.UpdateProfileEducationCommand;
@@ -22,6 +23,7 @@ import org.Profile.command.command.UpdateProfileCoverImageCommand;
 import org.Profile.command.command.UpdateProfilePortfolioCommand;
 import org.Profile.command.command.UpdateProfileSkillCommand;
 import org.Profile.command.command.UpdateProfileSocialLinkCommand;
+import org.Profile.command.data.Portfolio;
 import org.Profile.command.data.Profile;
 import org.Profile.command.data.ProfileRepository;
 import org.Profile.command.model.request.CreateEducationRequest;
@@ -148,10 +150,7 @@ public class ProfileServiceImpl implements ProfileService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Vui lòng chọn ảnh đại diện");
         }
 
-        String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File upload phải là hình ảnh");
-        }
+        validateImageFile(file);
 
         Profile profile = profileRepository.findById(profileId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
@@ -180,10 +179,7 @@ public class ProfileServiceImpl implements ProfileService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Vui lòng chọn ảnh bìa");
         }
 
-        String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File upload phải là hình ảnh");
-        }
+        validateImageFile(file);
 
         Profile profile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
@@ -334,6 +330,11 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public CompletableFuture<String> addPortfolio(String userId, CreatePortfolioRequest request) {
+        return addPortfolio(userId, request, null);
+    }
+
+    @Override
+    public CompletableFuture<String> addPortfolio(String userId, CreatePortfolioRequest request, MultipartFile image) {
         if (userId == null || userId.isBlank()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
         }
@@ -345,12 +346,18 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
 
+        String imageUrl = request.getImageUrl();
+        if (image != null && !image.isEmpty()) {
+            validateImageFile(image);
+            imageUrl = uploadImage(image, "profile-service/portfolios", "Upload ảnh portfolio thất bại");
+        }
+
         AddPortfolioToProfileCommand command = AddPortfolioToProfileCommand.builder()
                 .profileId(profile.getId())
                 .portfolioId(UUID.randomUUID().toString())
                 .title(request.getTitle().trim())
                 .description(request.getDescription())
-                .imageUrl(request.getImageUrl())
+                .imageUrl(imageUrl)
                 .projectUrl(request.getProjectUrl())
                 .githubUrl(request.getGithubUrl())
                 .role(request.getRole())
@@ -658,6 +665,26 @@ public class ProfileServiceImpl implements ProfileService {
         return commandGateway.send(new DeleteProfileSocialLinkCommand(profile.getId(), socialLinkId));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public CompletableFuture<String> deletePortfolio(String userId, String portfolioId) {
+        if (userId == null || userId.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
+        }
+
+        Profile profile = profileRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        Portfolio portfolio = profile.getPortfolios().stream()
+                .filter(existingPortfolio -> existingPortfolio.getId().equals(portfolioId))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Portfolio không tồn tại"));
+
+        deleteImageIfPossible(portfolio.getImageUrl(), "Xóa ảnh portfolio trên Cloudinary thất bại");
+
+        return commandGateway.send(new DeleteProfilePortfolioCommand(profile.getId(), portfolioId));
+    }
+
     private String uploadImage(MultipartFile file, String folder, String errorMessage) {
         try {
             Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
@@ -671,6 +698,13 @@ public class ProfileServiceImpl implements ProfileService {
             return secureUrl.toString();
         } catch (IOException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage, e);
+        }
+    }
+
+    private void validateImageFile(MultipartFile file) {
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File upload phải là hình ảnh");
         }
     }
 
