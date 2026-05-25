@@ -9,6 +9,7 @@ import org.Profile.command.model.request.CreateWorkExperienceRequest;
 import org.Profile.command.model.request.UpdateProfileRequest;
 import org.Profile.command.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -41,6 +44,15 @@ public class ProfileCommandController {
             @Valid @RequestBody UpdateProfileRequest request
     ) {
         return profileService.updateMyProfile(jwt.getSubject(), request);
+    }
+
+    @PostMapping(value = "/{profileId}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CompletableFuture<String> updateAvatar(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String profileId,
+            @RequestParam("file") MultipartFile file
+    ) {
+        return profileService.updateAvatar(jwt.getSubject(), profileId, file);
     }
 
     @PostMapping("/{profileId}/educations")

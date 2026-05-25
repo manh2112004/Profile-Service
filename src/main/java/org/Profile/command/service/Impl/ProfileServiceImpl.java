@@ -1,5 +1,7 @@
 package org.Profile.command.service.Impl;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import org.Profile.command.command.AddEducationToProfileCommand;
 import org.Profile.command.command.AddExperienceToProfileCommand;
 import org.Profile.command.command.AddSkillToProfileCommand;
@@ -12,6 +14,7 @@ import org.Profile.command.command.DeleteProfileSocialLinkCommand;
 import org.Profile.command.command.UpdateProfileEducationCommand;
 import org.Profile.command.command.UpdateProfileExperienceCommand;
 import org.Profile.command.command.UpdateProfileCommand;
+import org.Profile.command.command.UpdateProfileAvatarCommand;
 import org.Profile.command.command.UpdateProfileSkillCommand;
 import org.Profile.command.command.UpdateProfileSocialLinkCommand;
 import org.Profile.command.data.Profile;
@@ -30,8 +33,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Collections;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -42,6 +48,9 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Autowired
     private ProfileRepository profileRepository;
+
+    @Autowired
+    private Cloudinary cloudinary;
 
     @Override
     public CompletableFuture<String> createProfile(String userId, CreateProfileRequest request) {
@@ -117,6 +126,38 @@ public class ProfileServiceImpl implements ProfileService {
                 .experiences(request.getExperiences())
                 .skills(request.getSkills())
                 .socialLinks(request.getSocialLinks())
+                .build();
+
+        return commandGateway.send(command);
+    }
+
+    @Override
+    public CompletableFuture<String> updateAvatar(String userId, String profileId, MultipartFile file) {
+        if (userId == null || userId.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
+        }
+
+        if (file == null || file.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Vui lòng chọn ảnh đại diện");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "File upload phải là hình ảnh");
+        }
+
+        Profile profile = profileRepository.findById(profileId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        if (!profile.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền cập nhật profile này");
+        }
+
+        String avatarUrl = uploadImage(file);
+
+        UpdateProfileAvatarCommand command = UpdateProfileAvatarCommand.builder()
+                .profileId(profile.getId())
+                .avatarUrl(avatarUrl)
                 .build();
 
         return commandGateway.send(command);
@@ -472,5 +513,21 @@ public class ProfileServiceImpl implements ProfileService {
         }
 
         return commandGateway.send(new DeleteProfileSocialLinkCommand(profile.getId(), socialLinkId));
+    }
+
+    private String uploadImage(MultipartFile file) {
+        try {
+            Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+                    "folder", "profile-service/avatars",
+                    "resource_type", "image"
+            ));
+            Object secureUrl = result.get("secure_url");
+            if (secureUrl == null) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Cloudinary không trả về URL ảnh");
+            }
+            return secureUrl.toString();
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Upload avatar thất bại", e);
+        }
     }
 }

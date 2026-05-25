@@ -6,6 +6,7 @@ import org.Profile.command.model.request.CreateProfileSkillRequest;
 import org.Profile.command.model.request.CreateSocialLinkRequest;
 import org.Profile.command.model.request.UpdateProfileRequest;
 import org.Profile.command.model.request.CreateWorkExperienceRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -13,6 +14,8 @@ public interface ProfileService {
     CompletableFuture<String> createProfile(String userId, CreateProfileRequest request);
 
     CompletableFuture<String> updateMyProfile(String userId, UpdateProfileRequest request);
+
+    CompletableFuture<String> updateAvatar(String userId, String profileId, MultipartFile file);
 
     CompletableFuture<String> addEducation(String userId, String profileId, CreateEducationRequest request);
 

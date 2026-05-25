@@ -1,0 +1,19 @@
+package org.Profile.command.command;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.axonframework.modelling.command.TargetAggregateIdentifier;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class UpdateProfileAvatarCommand {
+    @TargetAggregateIdentifier
+    private String profileId;
+    private String avatarUrl;
+}
