@@ -530,6 +530,17 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional(readOnly = true)
     public CompletableFuture<String> updatePortfolio(String userId, String portfolioId, CreatePortfolioRequest request) {
+        return updatePortfolio(userId, portfolioId, request, null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CompletableFuture<String> updatePortfolio(
+            String userId,
+            String portfolioId,
+            CreatePortfolioRequest request,
+            MultipartFile image
+    ) {
         if (userId == null || userId.isBlank()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
         }
@@ -541,11 +552,23 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = profileRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
 
-        boolean portfolioExists = profile.getPortfolios().stream()
-                .anyMatch(portfolio -> portfolio.getId().equals(portfolioId));
+        Portfolio portfolio = profile.getPortfolios().stream()
+                .filter(existingPortfolio -> existingPortfolio.getId().equals(portfolioId))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Portfolio không tồn tại"));
 
-        if (!portfolioExists) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Portfolio không tồn tại");
+        boolean removeImage = Boolean.TRUE.equals(request.getRemoveImage());
+        if (removeImage && image != null && !image.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Không thể vừa upload ảnh mới vừa xóa ảnh");
+        }
+
+        String imageUrl = request.getImageUrl();
+        if (image != null && !image.isEmpty()) {
+            validateImageFile(image);
+            imageUrl = uploadImage(image, "profile-service/portfolios", "Upload ảnh portfolio thất bại");
+            deleteImageIfPossible(portfolio.getImageUrl(), "Xóa ảnh portfolio cũ trên Cloudinary thất bại");
+        } else if (removeImage) {
+            deleteImageIfPossible(portfolio.getImageUrl(), "Xóa ảnh portfolio trên Cloudinary thất bại");
         }
 
         UpdateProfilePortfolioCommand command = UpdateProfilePortfolioCommand.builder()
@@ -553,7 +576,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .portfolioId(portfolioId)
                 .title(request.getTitle() == null ? null : request.getTitle().trim())
                 .description(request.getDescription())
-                .imageUrl(request.getImageUrl())
+                .imageUrl(imageUrl)
                 .projectUrl(request.getProjectUrl())
                 .githubUrl(request.getGithubUrl())
                 .role(request.getRole())
@@ -564,6 +587,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .currentlyWorking(request.getCurrentlyWorking())
                 .isPublic(request.getIsPublic())
                 .displayOrder(request.getDisplayOrder())
+                .removeImage(removeImage)
                 .build();
 
         return commandGateway.send(command);

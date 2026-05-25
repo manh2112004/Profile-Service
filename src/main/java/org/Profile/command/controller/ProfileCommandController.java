@@ -171,13 +171,23 @@ public class ProfileCommandController {
         return profileService.updateSocialLink(jwt.getSubject(), profileId, socialLinkId, request);
     }
 
-    @PutMapping("/me/portfolios/{id}")
+    @PutMapping(value = "/me/portfolios/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public CompletableFuture<String> updatePortfolio(
             @AuthenticationPrincipal Jwt jwt,
             @PathVariable String id,
             @RequestBody CreatePortfolioRequest request
     ) {
         return profileService.updatePortfolio(jwt.getSubject(), id, request);
+    }
+
+    @PutMapping(value = "/me/portfolios/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CompletableFuture<String> updatePortfolioWithImage(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String id,
+            @ModelAttribute CreatePortfolioRequest request,
+            @RequestParam(value = "image", required = false) MultipartFile image
+    ) {
+        return profileService.updatePortfolio(jwt.getSubject(), id, request, image);
     }
 
     @DeleteMapping("/{profileId}/educations/{educationId}")

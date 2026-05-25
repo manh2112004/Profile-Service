@@ -491,7 +491,9 @@ public class ProfileEventHandler {
         if (event.getDescription() != null) {
             portfolio.setDescription(event.getDescription());
         }
-        if (event.getImageUrl() != null) {
+        if (Boolean.TRUE.equals(event.getRemoveImage())) {
+            portfolio.setImageUrl(null);
+        } else if (event.getImageUrl() != null) {
             portfolio.setImageUrl(event.getImageUrl());
         }
         if (event.getProjectUrl() != null) {

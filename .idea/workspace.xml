@@ -4,11 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3ed3a90c-3e0c-4d03-86e2-8762a49d2310" name="Changes" comment="api update portfolios in profile">
+    <list default="true" id="3ed3a90c-3e0c-4d03-86e2-8762a49d2310" name="Changes" comment="thêm api xóa portfolio và thêm chức năng update cho api create portfolio">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/command/aggregate/ProfileAggregate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/command/aggregate/ProfileAggregate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/command/command/UpdateProfilePortfolioCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/command/command/UpdateProfilePortfolioCommand.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/command/controller/ProfileCommandController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/command/controller/ProfileCommandController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/command/event/ProfileEventHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/command/event/ProfileEventHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/command/event/ProfilePortfolioUpdatedEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/command/event/ProfilePortfolioUpdatedEvent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/command/model/request/CreatePortfolioRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/command/model/request/CreatePortfolioRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/command/service/Impl/ProfileServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/command/service/Impl/ProfileServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/command/service/ProfileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/command/service/ProfileService.java" afterDir="false" />
     </list>
@@ -284,11 +287,18 @@
       <option name="project" value="LOCAL" />
       <updated>1779693780200</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="thêm api xóa portfolio và thêm chức năng update cho api create portfolio">
+      <option name="closed" value="true" />
+      <created>1779695130478</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1779695130478</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="api lấy profile theo id" />
     <MESSAGE value="api create educations" />
     <MESSAGE value="api update one educations" />
     <MESSAGE value="api detail educations" />
@@ -313,6 +323,7 @@
     <MESSAGE value="api add portfolios" />
     <MESSAGE value="api get all portfolios in profile" />
     <MESSAGE value="api update portfolios in profile" />
-    <option name="LAST_COMMIT_MESSAGE" value="api update portfolios in profile" />
+    <MESSAGE value="thêm api xóa portfolio và thêm chức năng update cho api create portfolio" />
+    <option name="LAST_COMMIT_MESSAGE" value="thêm api xóa portfolio và thêm chức năng update cho api create portfolio" />
   </component>
 </project>

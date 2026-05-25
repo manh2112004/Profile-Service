@@ -66,6 +66,13 @@ public interface ProfileService {
 
     CompletableFuture<String> updatePortfolio(String userId, String portfolioId, CreatePortfolioRequest request);
 
+    CompletableFuture<String> updatePortfolio(
+            String userId,
+            String portfolioId,
+            CreatePortfolioRequest request,
+            MultipartFile image
+    );
+
     CompletableFuture<String> deleteEducation(String userId, String profileId, String educationId);
 
     CompletableFuture<String> deleteExperience(String userId, String profileId, String experienceId);

@@ -31,4 +31,5 @@ public class UpdateProfilePortfolioCommand {
     private Boolean currentlyWorking;
     private Boolean isPublic;
     private Integer displayOrder;
+    private Boolean removeImage;
 }

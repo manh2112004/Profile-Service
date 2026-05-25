@@ -282,6 +282,7 @@ public class ProfileAggregate {
                 .currentlyWorking(command.getCurrentlyWorking())
                 .isPublic(command.getIsPublic())
                 .displayOrder(command.getDisplayOrder())
+                .removeImage(command.getRemoveImage())
                 .build());
         return "Cập nhật portfolio thành công";
     }
