@@ -19,6 +19,7 @@ import org.Profile.command.command.UpdateProfileExperienceCommand;
 import org.Profile.command.command.UpdateProfileCommand;
 import org.Profile.command.command.UpdateProfileAvatarCommand;
 import org.Profile.command.command.UpdateProfileCoverImageCommand;
+import org.Profile.command.command.UpdateProfilePortfolioCommand;
 import org.Profile.command.command.UpdateProfileSkillCommand;
 import org.Profile.command.command.UpdateProfileSocialLinkCommand;
 import org.Profile.command.data.Profile;
@@ -514,6 +515,48 @@ public class ProfileServiceImpl implements ProfileService {
                 .socialLinkId(socialLinkId)
                 .platform(request.getPlatform())
                 .url(request.getUrl())
+                .build();
+
+        return commandGateway.send(command);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CompletableFuture<String> updatePortfolio(String userId, String portfolioId, CreatePortfolioRequest request) {
+        if (userId == null || userId.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Không xác định được user từ token");
+        }
+
+        if (request.getTitle() != null && request.getTitle().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "title không được để trống");
+        }
+
+        Profile profile = profileRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        boolean portfolioExists = profile.getPortfolios().stream()
+                .anyMatch(portfolio -> portfolio.getId().equals(portfolioId));
+
+        if (!portfolioExists) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Portfolio không tồn tại");
+        }
+
+        UpdateProfilePortfolioCommand command = UpdateProfilePortfolioCommand.builder()
+                .profileId(profile.getId())
+                .portfolioId(portfolioId)
+                .title(request.getTitle() == null ? null : request.getTitle().trim())
+                .description(request.getDescription())
+                .imageUrl(request.getImageUrl())
+                .projectUrl(request.getProjectUrl())
+                .githubUrl(request.getGithubUrl())
+                .role(request.getRole())
+                .organization(request.getOrganization())
+                .technologies(request.getTechnologies())
+                .startDate(request.getStartDate())
+                .endDate(request.getEndDate())
+                .currentlyWorking(request.getCurrentlyWorking())
+                .isPublic(request.getIsPublic())
+                .displayOrder(request.getDisplayOrder())
                 .build();
 
         return commandGateway.send(command);

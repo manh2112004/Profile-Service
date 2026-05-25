@@ -161,6 +161,15 @@ public class ProfileCommandController {
         return profileService.updateSocialLink(jwt.getSubject(), profileId, socialLinkId, request);
     }
 
+    @PutMapping("/me/portfolios/{id}")
+    public CompletableFuture<String> updatePortfolio(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String id,
+            @RequestBody CreatePortfolioRequest request
+    ) {
+        return profileService.updatePortfolio(jwt.getSubject(), id, request);
+    }
+
     @DeleteMapping("/{profileId}/educations/{educationId}")
     public CompletableFuture<String> deleteEducation(
             @AuthenticationPrincipal Jwt jwt,

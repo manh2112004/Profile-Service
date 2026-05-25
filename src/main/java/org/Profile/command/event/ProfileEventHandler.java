@@ -476,6 +476,60 @@ public class ProfileEventHandler {
 
     @EventHandler
     @Transactional
+    public void on(ProfilePortfolioUpdatedEvent event) {
+        Profile profile = profileRepository.findById(event.getProfileId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));
+
+        Portfolio portfolio = profile.getPortfolios().stream()
+                .filter(existingPortfolio -> existingPortfolio.getId().equals(event.getPortfolioId()))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Portfolio không tồn tại"));
+
+        if (event.getTitle() != null) {
+            portfolio.setTitle(event.getTitle());
+        }
+        if (event.getDescription() != null) {
+            portfolio.setDescription(event.getDescription());
+        }
+        if (event.getImageUrl() != null) {
+            portfolio.setImageUrl(event.getImageUrl());
+        }
+        if (event.getProjectUrl() != null) {
+            portfolio.setProjectUrl(event.getProjectUrl());
+        }
+        if (event.getGithubUrl() != null) {
+            portfolio.setGithubUrl(event.getGithubUrl());
+        }
+        if (event.getRole() != null) {
+            portfolio.setRole(event.getRole());
+        }
+        if (event.getOrganization() != null) {
+            portfolio.setOrganization(event.getOrganization());
+        }
+        if (event.getTechnologies() != null) {
+            portfolio.setTechnologies(event.getTechnologies());
+        }
+        if (event.getStartDate() != null) {
+            portfolio.setStartDate(event.getStartDate());
+        }
+        if (event.getEndDate() != null) {
+            portfolio.setEndDate(event.getEndDate());
+        }
+        if (event.getCurrentlyWorking() != null) {
+            portfolio.setCurrentlyWorking(event.getCurrentlyWorking());
+        }
+        if (event.getIsPublic() != null) {
+            portfolio.setIsPublic(event.getIsPublic());
+        }
+        if (event.getDisplayOrder() != null) {
+            portfolio.setDisplayOrder(event.getDisplayOrder());
+        }
+
+        profileRepository.save(profile);
+    }
+
+    @EventHandler
+    @Transactional
     public void on(ProfileSocialLinkUpdatedEvent event) {
         Profile profile = profileRepository.findById(event.getProfileId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile không tồn tại"));

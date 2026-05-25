@@ -62,6 +62,8 @@ public interface ProfileService {
             CreateSocialLinkRequest request
     );
 
+    CompletableFuture<String> updatePortfolio(String userId, String portfolioId, CreatePortfolioRequest request);
+
     CompletableFuture<String> deleteEducation(String userId, String profileId, String educationId);
 
     CompletableFuture<String> deleteExperience(String userId, String profileId, String experienceId);
