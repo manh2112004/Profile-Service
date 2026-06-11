@@ -6,8 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="3ed3a90c-3e0c-4d03-86e2-8762a49d2310" name="Changes" comment="refactor api update portfolios">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/command/event/ProfileEventHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/command/event/ProfileEventHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/config/GlobalExceptionHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/config/GlobalExceptionHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/config/SecurityConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/query/controller/ProfileQueryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/query/controller/ProfileQueryController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/Profile/query/queries/ProfileQueryHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/Profile/query/queries/ProfileQueryHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,17 +38,33 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;Spring Boot.Main.executor&quot;: &quot;Run&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/intelliJ/DATN-BE/Profile-Service/src/main&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.tools&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\intelliJ\DATN-BE\Profile-Service\src\main" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
+        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.24374.151" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.24374.151" />
       </set>
     </attachedChunks>
   </component>
@@ -56,6 +75,15 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1779266694347</updated>
+      <workItem from="1779785639823" duration="2138000" />
+      <workItem from="1779853492033" duration="454000" />
+      <workItem from="1779854592693" duration="2463000" />
+      <workItem from="1779938667078" duration="1667000" />
+      <workItem from="1779941709868" duration="1414000" />
+      <workItem from="1780504093769" duration="460000" />
+      <workItem from="1780632299605" duration="4261000" />
+      <workItem from="1781064628687" duration="2122000" />
+      <workItem from="1781169213666" duration="1295000" />
     </task>
     <task id="LOCAL-00001" summary="config sercurity and axon">
       <option name="closed" value="true" />
@@ -299,6 +327,9 @@
     </task>
     <option name="localTasksCounter" value="31" />
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="api update one educations" />

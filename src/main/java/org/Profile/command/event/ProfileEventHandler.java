@@ -27,6 +27,7 @@ public class ProfileEventHandler {
     private ProfileRepository profileRepository;
 
     @EventHandler
+    @Transactional
     public void on(ProfileCreatedEvent event) {
         Profile profile = Profile.builder()
                 .id(event.getId())

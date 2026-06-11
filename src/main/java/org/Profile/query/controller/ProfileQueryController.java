@@ -85,6 +85,14 @@ public class ProfileQueryController {
         );
     }
 
+    @GetMapping("/public/user/{userId}")
+    public CompletableFuture<ProfileResponse> getProfileByUserId(@PathVariable String userId) {
+        return queryGateway.query(
+                new GetMyProfileQuery(userId),
+                ResponseTypes.instanceOf(ProfileResponse.class)
+        );
+    }
+
     @GetMapping("/{profileId}")
     public CompletableFuture<ProfileResponse> getProfileById(@PathVariable String profileId) {
         return queryGateway.query(
