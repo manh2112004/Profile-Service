@@ -9,6 +9,9 @@ import org.Profile.command.model.request.CreateSocialLinkRequest;
 import org.Profile.command.model.request.CreateWorkExperienceRequest;
 import org.Profile.command.model.request.UpdateProfileRequest;
 import org.Profile.command.service.ProfileService;
+import org.Profile.event.KafkaEvent;
+import org.Profile.event.KafkaEventProducer;
+import org.Profile.event.KafkaTopic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -31,6 +36,9 @@ import java.util.concurrent.CompletableFuture;
 public class ProfileCommandController {
     @Autowired
     private ProfileService profileService;
+
+    @Autowired
+    private KafkaEventProducer kafkaEventProducer;
 
     @PostMapping
     public CompletableFuture<String> createProfile(
@@ -45,7 +53,58 @@ public class ProfileCommandController {
             @AuthenticationPrincipal Jwt jwt,
             @Valid @RequestBody UpdateProfileRequest request
     ) {
-        return profileService.updateMyProfile(jwt.getSubject(), request);
+        return profileService.updateMyProfile(jwt.getSubject(), request).thenApply(result -> {
+            kafkaEventProducer.sendEvent(KafkaTopic.PROFILE_EVENTS, KafkaEvent.builder()
+                    .eventId(UUID.randomUUID().toString())
+                    .eventType("ProfileUpdatedEvent")
+                    .userId(jwt.getSubject())
+                    .referenceId(jwt.getSubject())
+                    .referenceType("PROFILE")
+                    .title("Cập nhật hồ sơ")
+                    .message("Hồ sơ cá nhân của bạn đã được cập nhật thành công.")
+                    .createdAt(LocalDateTime.now())
+                    .build());
+            return result;
+        });
+    }
+
+    @PutMapping("/{id}")
+    public CompletableFuture<String> updateProfileById(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String id,
+            @Valid @RequestBody UpdateProfileRequest request
+    ) {
+        return profileService.updateMyProfile(jwt.getSubject(), request).thenApply(result -> {
+            kafkaEventProducer.sendEvent(KafkaTopic.PROFILE_EVENTS, KafkaEvent.builder()
+                    .eventId(UUID.randomUUID().toString())
+                    .eventType("ProfileUpdatedEvent")
+                    .userId(jwt.getSubject())
+                    .referenceId(id)
+                    .referenceType("PROFILE")
+                    .title("Cập nhật hồ sơ")
+                    .message("Hồ sơ cá nhân của bạn đã được cập nhật thành công.")
+                    .createdAt(LocalDateTime.now())
+                    .build());
+            return result;
+        });
+    }
+
+    @PutMapping("/{id}/complete")
+    public CompletableFuture<String> completeProfile(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String id
+    ) {
+        kafkaEventProducer.sendEvent(KafkaTopic.PROFILE_EVENTS, KafkaEvent.builder()
+                .eventId(UUID.randomUUID().toString())
+                .eventType("ProfileCompletedEvent")
+                .userId(jwt.getSubject())
+                .referenceId(id)
+                .referenceType("PROFILE")
+                .title("Hoàn thành hồ sơ")
+                .message("Chúc mừng! Bạn đã hoàn thành hồ sơ cá nhân.")
+                .createdAt(LocalDateTime.now())
+                .build());
+        return CompletableFuture.completedFuture("Hoàn thành hồ sơ thành công");
     }
 
     @PostMapping(value = "/{profileId}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
